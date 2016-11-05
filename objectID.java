@@ -76,7 +76,7 @@ public class objectID {
 			yDis=yDis-usDistance*Math.sin(Math.abs(270-heading));
 		}
 		//add the position of block to the map matrix
-		mapping.map[(int)Math.ceil(xDis/30)][(int)Math.ceil(yDis/30)]=1;
+		mapping.map[(int)Math.ceil(xDis/30)-1][(int)Math.ceil(yDis/30)-1]=1;
 	}
 	
 	private float getFilteredData() {
