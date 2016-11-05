@@ -60,19 +60,19 @@ public class objectID {
 
 	private void updateMap(double xDis, double yDis, double heading, double usDistance){
 		if(heading<90){
-			xDis=xDis-usDistance*Math.cos(Math.abs(90-heading));
-			yDis=yDis+usDistance*Math.sin(Math.abs(90-heading));
-		}
-		else if(heading>90 && heading<180){
 			xDis=xDis+usDistance*Math.cos(Math.abs(90-heading));
 			yDis=yDis+usDistance*Math.sin(Math.abs(90-heading));
 		}
+		else if(heading>90 && heading<180){
+			xDis=xDis-usDistance*Math.cos(Math.abs(90-heading));
+			yDis=yDis+usDistance*Math.sin(Math.abs(90-heading));
+		}
 		else if(heading>=180 && heading<270){
-			xDis=xDis+usDistance*Math.cos(Math.abs(270-heading));
+			xDis=xDis-usDistance*Math.cos(Math.abs(270-heading));
 			yDis=yDis-usDistance*Math.sin(Math.abs(270-heading));
 		}
 		else{
-			xDis=xDis-usDistance*Math.cos(Math.abs(270-heading));
+			xDis=xDis+usDistance*Math.cos(Math.abs(270-heading));
 			yDis=yDis-usDistance*Math.sin(Math.abs(270-heading));
 		}
 		//add the position of block to the map matrix
