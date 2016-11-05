@@ -3,7 +3,7 @@ package trotty02;
 public class Mapping {
 	int[][] map = new int[12][12];
 	//blocks are 1
-	//empty or unexplored space is 0
+	//empty or unexplored space is 0 
 	
 	
 	public Mapping(){
