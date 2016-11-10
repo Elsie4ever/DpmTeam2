@@ -59,16 +59,16 @@ public class ObjectID extends Thread {
 	
 	public void setStateOfDay(Light state){
 		if(state == Light.LAB){
-			this.color = COLOR_LAB;
+			color = COLOR_LAB;
 		}
 		else if(state == Light.MORNING){
-			this.color = COLOR_MORNING;
+			color = COLOR_MORNING;
 		}
 		else if(state == Light.NIGHT){
-			this.color = COLOR_NIGHT;
+			color = COLOR_NIGHT;
 		}
 		else{ //state == Light.NOON
-			this.color = COLOR_NOON;
+			color = COLOR_NOON;
 		}
 	}
 	
