@@ -35,8 +35,8 @@ public class Display extends Thread{
 			t.drawString("X:              ", 0, 0);
 			t.drawString("Y:              ", 0, 1);
 			t.drawString("T:              ", 0, 2);
-			t.drawString("Dist:           ", 0, 3);
-			t.drawString("Color:           ", 0, 4);
+			t.drawString("DistFront:      ", 0, 3);
+			t.drawString("Color:          ", 0, 4);
 
 			// get the odometry information
 			odometer.getPosition(position, new boolean[] { true, true, true });
@@ -46,7 +46,7 @@ public class Display extends Thread{
 				t.drawString(formattedDoubleToString(position[i], 2), 3, i);
 			}
 			
-			t.drawInt((int) UltrasonicPoller.getDist(), 6, 3);
+			t.drawInt((int) UltrasonicPoller.getDistFront(), 11, 3);
 			//t.drawString(Float.toString(coPoller.getColor()), 7, 4);
 			t.drawInt((int) coPoller.getColor(), 7, 4);
 
