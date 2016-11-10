@@ -78,7 +78,8 @@ public class StartTrotty {
 		
 		// setup the odometer, moving window and display
 		Odometer odo = new Odometer(leftMotor, rightMotor, WHEEL_RADIUS, TRACK);
-		UltrasonicPoller usPoller = new UltrasonicPoller(usSensor, usData);
+		UltrasonicPoller usPoller = new UltrasonicPoller(usSensorFront, usDataFront, usSensorSide, usDataSide,
+				usSensorBack, usDataBack);
 		ColorPoller coPoller = new ColorPoller(colorValue, colorData);
 		OdometryDisplay odoDisp = new OdometryDisplay(odo, t, usPoller, coPoller);
 		SimpleNavigation simpleNavigation = new SimpleNavigation(leftMotor, rightMotor, WHEEL_RADIUS, TRACK, bandCenter,
