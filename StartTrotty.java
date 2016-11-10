@@ -93,6 +93,13 @@ public class StartTrotty {
 		ObjectSearch objSearch = new ObjectSearch(objectID, usPoller, simpleNavigation, simpleNavigation,
 				odo, leftClaw, rightClaw);
 		
+		/*
+		 * THE FOLLOWING ARE STUDS, CHOICES = WHAT STATE OF DAY IT IS
+		 * e.g. if(in lab){
+		 * 			objectID.setStateOfDay(ObjectID.Light.LAB);
+		 * 		}
+		 */
+		
 		do {
 			// clear the display
 			t.clear();
