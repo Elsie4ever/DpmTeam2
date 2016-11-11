@@ -15,8 +15,8 @@ public class USLocalizer {
 	private UltrasonicPoller usPoller;
 	private static final double FRONT_SENSOR_OFFSET = 12.5;
 	private static final double BACK_SENSOR_OFFSET = 3.5;
-	private final double FE_OFFSET = -1*Math.PI/180;
-	private final double RE_OFFSET = -3.4*Math.PI/180;
+	private final double FE_OFFSET = 0; //-1*Math.PI/180;
+	private final double RE_OFFSET = 0; //-3.4*Math.PI/180;
 	
 	public USLocalizer(Odometer odo, UltrasonicPoller usPoller, LocalizationType locType, Navigation simNav) {
 		this.odo = odo;

@@ -18,7 +18,11 @@ public class LightLocalizer {
 	private static final float TRAVEL_SPEED = 200;
 	private static final double SQUARE_DIST = 30.48;
 	private static final double OFFSET = 9.8;
-	private static final double usOFFSET = 12.9;
+	private static final double US_OFFSET_FRONT = 12.5;
+	private static final double US_OFFSET_BACK = 3.5;
+	private static double xCorner;
+	private static double yCorner;
+	
 	
 	public LightLocalizer(Odometer odo, UltrasonicPoller usPoller, SampleProvider colorSensor, float[] colorData,
 			EV3LargeRegulatedMotor lightMotor, Navigation simNav) {
@@ -28,6 +32,10 @@ public class LightLocalizer {
 		this.simNav = simNav;
 		this.usPoller = usPoller;
 		this.lightMotor = lightMotor;
+		
+		// This needs to be switched to the values gotten from wifi
+		xCorner = 30.48;
+		yCorner = 30.48;
 	}
 	
 	public void doLocalization() {
@@ -41,10 +49,10 @@ public class LightLocalizer {
 		lightMotor.rotate(90);
 		
 		// drive to location listed in tutorial
-		simNav.turnTo(180);
-		distA = UltrasonicPoller.getDistFront() + usOFFSET;
 		simNav.turnTo(270);
-		distB = UltrasonicPoller.getDistFront() + usOFFSET;
+		distA = UltrasonicPoller.getDistFront() + US_OFFSET_FRONT;
+		simNav.turnTo(0);
+		distB = UltrasonicPoller.getDistBack() + US_OFFSET_BACK;
 		
 		simNav.turnTo(45);
 		simNav.travelTo(odo.getX() + (SQUARE_DIST - distB), odo.getY() + (SQUARE_DIST - distA));
@@ -90,8 +98,8 @@ public class LightLocalizer {
 		odo.setTheta(odo.getTheta() + H);
 		simNav.stopMov();
 		simNav.travelTo(odo.getX()+X, odo.getY()+Y);
-		odo.setX(0);
-		odo.setY(0);
+		odo.setX(xCorner);
+		odo.setY(yCorner);
 		simNav.turnTo(0);
 		simNav.stopMov();
 		
