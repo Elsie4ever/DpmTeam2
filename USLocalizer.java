@@ -54,25 +54,28 @@ public class USLocalizer {
 			angleA = odo.getTheta() - heading;
 			
 			// switch direction and wait until it sees no wall
-			while(UltrasonicPoller.getDistFront() <= WALL_DIST){
+			while(UltrasonicPoller.getDistBack() <= WALL_DIST){
 				simNav.turnCCW();
 				
-				if(UltrasonicPoller.getDistFront() > WALL_DIST){
+				if(UltrasonicPoller.getDistBack() > WALL_DIST){
 					simNav.stopMov();
 					break;
 				}
 			}
 			
 			// keep rotating until the robot sees a wall, then latch the angle
-			while(!(UltrasonicPoller.getDistFront() < WALL_DIST)){
+			while(!(UltrasonicPoller.getDistBack() < WALL_DIST)){
 				simNav.turnCCW();
 				
-				if(UltrasonicPoller.getDistFront() <= WALL_DIST){
+				if(UltrasonicPoller.getDistBack() <= WALL_DIST){
 					simNav.stopMov();
 					break;
 				}
 			}
 			angleB = ((2*Math.PI - (odo.getTheta() - heading))%(2*Math.PI) + 2*Math.PI)%(2*Math.PI) + angleA;
+			
+			//readjust angleB to be the opposite of it since we're using the back sensor
+			angleB = (angleB + Math.PI)%Math.PI;
 			
 			// Turn back to heading
 			simNav.turnTo(heading);
@@ -84,13 +87,13 @@ public class USLocalizer {
 			odo.setTheta(curHeading);
 			
 			//Turn to the x-axis
-			simNav.turnTo(90);
+			simNav.turnTo(0);
 			
 			// Mend the theta with our testing mean
 			odo.setTheta(odo.getTheta() + FE_OFFSET);
 		}
 		
-		else {
+		else { // RISING_EDGE
 			/*
 			 * The robot should turn until it sees the wall, then look for the
 			 * "rising edges:" the points where it no longer sees the wall.
@@ -111,7 +114,7 @@ public class USLocalizer {
 			odo.setTheta(0);
 			heading = odo.getTheta(); // Remember the "heading"
 			
-			// keep rotating until the robot sees a wall, then latch the angle
+			// keep rotating until the robot sees no wall, then latch the angle
 			while(!(UltrasonicPoller.getDistFront() > WALL_DIST)){
 				simNav.turnCW();
 				
@@ -122,26 +125,30 @@ public class USLocalizer {
 			}
 			angleA = odo.getTheta() - heading;
 			
-			// switch direction and wait until it sees no wall
-			while(UltrasonicPoller.getDistFront() >= WALL_DIST){
+			// switch direction and wait until it sees a wall
+			while(UltrasonicPoller.getDistBack() >= WALL_DIST){
 				simNav.turnCCW();
 				
-				if(UltrasonicPoller.getDistFront() < WALL_DIST){
+				if(UltrasonicPoller.getDistBack() < WALL_DIST){
 					simNav.stopMov();
 					break;
 				}
 			}
 			
-			// keep rotating until the robot sees a wall, then latch the angle
-			while(!(UltrasonicPoller.getDistFront() > WALL_DIST)){
+			// keep rotating until the robot sees no wall, then latch the angle
+			while(!(UltrasonicPoller.getDistBack() > WALL_DIST)){
 				simNav.turnCCW();
 				
-				if(UltrasonicPoller.getDistFront() >= WALL_DIST){
+				if(UltrasonicPoller.getDistBack() >= WALL_DIST){
 					simNav.stopMov();
 					break;
 				}
 			}
 			angleB = ((2*Math.PI - (odo.getTheta() - heading))%(2*Math.PI) + 2*Math.PI)%(2*Math.PI) + angleA;
+			
+			//readjust angleB to be the opposite of it since we're using the back sensor
+			
+			angleB = (angleB + Math.PI)%Math.PI;
 			
 			// Turn back to heading
 			simNav.turnTo(heading);
@@ -153,7 +160,7 @@ public class USLocalizer {
 			odo.setTheta(curHeading);
 			
 			//Turn to the x-axis
-			simNav.turnTo(90);
+			simNav.turnTo(0);
 			
 			// Mend the theta with our testing mean
 			odo.setTheta(odo.getTheta() + RE_OFFSET);
