@@ -13,6 +13,8 @@ public class USLocalizer {
 	private static final double WALL_DIST = 30;
 	private Navigation simNav;
 	private UltrasonicPoller usPoller;
+	private static final double FRONT_SENSOR_OFFSET = 12.5;
+	private static final double BACK_SENSOR_OFFSET = 3.5;
 	private final double FE_OFFSET = -1*Math.PI/180;
 	private final double RE_OFFSET = -3.4*Math.PI/180;
 	
@@ -54,20 +56,20 @@ public class USLocalizer {
 			angleA = odo.getTheta() - heading;
 			
 			// switch direction and wait until it sees no wall
-			while(UltrasonicPoller.getDistBack() <= WALL_DIST){
+			while(UltrasonicPoller.getDistBack() <= WALL_DIST + FRONT_SENSOR_OFFSET - BACK_SENSOR_OFFSET){
 				simNav.turnCCW();
 				
-				if(UltrasonicPoller.getDistBack() > WALL_DIST){
+				if(UltrasonicPoller.getDistBack() > WALL_DIST + FRONT_SENSOR_OFFSET - BACK_SENSOR_OFFSET){
 					simNav.stopMov();
 					break;
 				}
 			}
 			
 			// keep rotating until the robot sees a wall, then latch the angle
-			while(!(UltrasonicPoller.getDistBack() < WALL_DIST)){
+			while(!(UltrasonicPoller.getDistBack() < WALL_DIST + FRONT_SENSOR_OFFSET - BACK_SENSOR_OFFSET)){
 				simNav.turnCCW();
 				
-				if(UltrasonicPoller.getDistBack() <= WALL_DIST){
+				if(UltrasonicPoller.getDistBack() <= WALL_DIST + FRONT_SENSOR_OFFSET - BACK_SENSOR_OFFSET){
 					simNav.stopMov();
 					break;
 				}
@@ -126,20 +128,20 @@ public class USLocalizer {
 			angleA = odo.getTheta() - heading;
 			
 			// switch direction and wait until it sees a wall
-			while(UltrasonicPoller.getDistBack() >= WALL_DIST){
+			while(UltrasonicPoller.getDistBack() >= WALL_DIST + FRONT_SENSOR_OFFSET - BACK_SENSOR_OFFSET){
 				simNav.turnCCW();
 				
-				if(UltrasonicPoller.getDistBack() < WALL_DIST){
+				if(UltrasonicPoller.getDistBack() < WALL_DIST + FRONT_SENSOR_OFFSET - BACK_SENSOR_OFFSET){
 					simNav.stopMov();
 					break;
 				}
 			}
 			
 			// keep rotating until the robot sees no wall, then latch the angle
-			while(!(UltrasonicPoller.getDistBack() > WALL_DIST)){
+			while(!(UltrasonicPoller.getDistBack() > WALL_DIST + FRONT_SENSOR_OFFSET - BACK_SENSOR_OFFSET)){
 				simNav.turnCCW();
 				
-				if(UltrasonicPoller.getDistBack() >= WALL_DIST){
+				if(UltrasonicPoller.getDistBack() >= WALL_DIST + FRONT_SENSOR_OFFSET - BACK_SENSOR_OFFSET){
 					simNav.stopMov();
 					break;
 				}
