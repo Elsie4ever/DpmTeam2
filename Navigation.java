@@ -42,7 +42,7 @@ public class Navigation extends Thread {
 	}
 	
 	public void travelTo(double x, double y){
-		/*This method causes the robot to travel to the absolute field location (x, y).
+		/**This method causes the robot to travel to the absolute field location (x, y).
 		This method should continuously call turnTo(double theta) and then
 		set the motor speed to forward(straight). This will make sure that your
 		heading is updated until you reach your exact goal. (This method will poll
@@ -51,7 +51,7 @@ public class Navigation extends Thread {
 		synchronized(lock){
 			double heading = calcHeadingMath(x, y);
 			//use the coordinate system of the odometer
-			turnTo(mathToCompass(heading));	
+			turnTo(heading);	
 			
 			while (!(odometer.getX() < x + 3 && odometer.getX() > x - ERROR && odometer.getY() < y + 3 && odometer.getY() > y - ERROR)) {
 				leftMotor.setSpeed(FORWARD_SPEED);
@@ -61,8 +61,8 @@ public class Navigation extends Thread {
 				
 				//continuously checks the angle and corrects while moving forward if needed
 				heading = calcHeadingMath(x, y);
-				if(!angleWithinBounds(odometer.getTheta()*180/Math.PI, mathToCompass(heading) + ERROR, mathToCompass(heading) - ERROR)){
-					turnTo(mathToCompass(heading));   //continuously keeps on towards heading if off
+				if(!angleWithinBounds(odometer.getTheta()*180/Math.PI, heading + ERROR, heading - ERROR)){
+					turnTo(heading);   //continuously keeps on towards heading if off
 				}
 			}
 			rightMotor.stop(true);
@@ -71,7 +71,7 @@ public class Navigation extends Thread {
 	}
 	
 	public void travelToAvoid(double x, double y){
-		/*This method causes the robot to travel to the absolute field location (x, y).
+		/**This method causes the robot to travel to the absolute field location (x, y).
 		This method should continuously call turnTo(double theta) and then
 		set the motor speed to forward(straight). This will make sure that your
 		heading is updated until you reach your exact goal. (This method will poll
@@ -80,7 +80,7 @@ public class Navigation extends Thread {
 		synchronized(lock){
 			double heading = calcHeadingMath(x, y);
 			//use the coordinate system of the odometer
-			turnTo(mathToCompass(heading));	
+			turnTo(heading);	
 			
 			while (!(odometer.getX() < x + 3 && odometer.getX() > x - ERROR && odometer.getY() < y + 3 && odometer.getY() > y - ERROR)) {
 				leftMotor.setSpeed(FORWARD_SPEED);
@@ -89,14 +89,14 @@ public class Navigation extends Thread {
 				rightMotor.forward();
 				
 				//Avoid obstacles
-				if(UltrasonicPoller.getDist() < this.width){
+				if(UltrasonicPoller.getDistFront() < this.width){
 					avoid();
 				}
 				
 				//continuously checks the angle and corrects while moving forward if needed
 				heading = calcHeadingMath(x, y);
-				if(!angleWithinBounds(odometer.getTheta()*180/Math.PI, mathToCompass(heading) + ERROR, mathToCompass(heading) - ERROR)){
-					turnTo(mathToCompass(heading));   //continuously keeps on towards heading if off
+				if(!angleWithinBounds(odometer.getTheta()*180/Math.PI, heading + ERROR, heading - ERROR)){
+					turnTo(heading);   //continuously keeps on towards heading if off
 				}
 			}
 			rightMotor.stop(true);
@@ -105,7 +105,7 @@ public class Navigation extends Thread {
 	}
 	
 	public void turnTo(double boardHeading){
-		/*This method causes the robot to turn (on point) to the absolute heading
+		/**This method causes the robot to turn (on point) to the absolute heading
 		theta. This method should turn a MINIMAL angle to it's target.*/
 		synchronized(lock){
 			double deltaTheta = boardHeading - (odometer.getTheta()*180/Math.PI); // Makes sure that the angle is [0, 360]
@@ -133,7 +133,7 @@ public class Navigation extends Thread {
 		headingA = odometer.getTheta();
 		
 		//Turn CCW until you don't see a wall
-		while(UltrasonicPoller.getDist()*Math.sin(odometer.getTheta()) < this.bandCenter){
+		while(UltrasonicPoller.getDistFront()*Math.sin(odometer.getTheta()) < this.bandCenter){
 			turnCCW();
 		}
 		stopMov();
@@ -142,19 +142,19 @@ public class Navigation extends Thread {
 		headingB = odometer.getTheta();
 		
 		//Calculate the heading left to turn to be perpendicular
-		double ratio = this.bandCenter/(UltrasonicPoller.getDist()*Math.sin(odometer.getTheta()));
+		double ratio = this.bandCenter/(UltrasonicPoller.getDistFront()*Math.sin(odometer.getTheta()));
 		if(ratio < 0.01 || ratio > -0.01){
 			ratio = 0;
 		}
 		double headingLeftToTurn = Math.asin(ratio);
 		
 		turnTo(((Math.toDegrees(odometer.getTheta()-headingLeftToTurn)+2*Math.PI)%(2*Math.PI)));
-		travelTo(odometer.getX() + UltrasonicPoller.getDist()*Math.cos(headingB) + this.bandCenter,
-				odometer.getY() + UltrasonicPoller.getDist()*Math.sin(headingB) + this.bandCenter);
+		travelTo(odometer.getX() + UltrasonicPoller.getDistFront()*Math.cos(headingB) + this.bandCenter,
+				odometer.getY() + UltrasonicPoller.getDistFront()*Math.sin(headingB) + this.bandCenter);
 		turnTo(((Math.toDegrees(odometer.getTheta()+Math.PI/2)+2*Math.PI)%(2*Math.PI)));
 		
 		//Turn CCW until you see a wall
-		while(UltrasonicPoller.getDist()*Math.sin(odometer.getTheta()) >= this.bandCenter){
+		while(UltrasonicPoller.getDistFront()*Math.sin(odometer.getTheta()) >= this.bandCenter){
 			turnCCW();
 		}
 		stopMov();
@@ -163,7 +163,7 @@ public class Navigation extends Thread {
 		headingC = odometer.getTheta();
 		
 		//Turn CCW until you don't see a wall
-		while(UltrasonicPoller.getDist()*Math.sin(odometer.getTheta()) < this.bandCenter){
+		while(UltrasonicPoller.getDistFront()*Math.sin(odometer.getTheta()) < this.bandCenter){
 			turnCCW();
 		}
 		stopMov();
@@ -172,15 +172,15 @@ public class Navigation extends Thread {
 		headingD = odometer.getTheta();
 		
 		//Calculate the heading left to turn to be perpendicular
-		double ratio1 = this.bandCenter/(UltrasonicPoller.getDist()*Math.sin(odometer.getTheta()));
+		double ratio1 = this.bandCenter/(UltrasonicPoller.getDistFront()*Math.sin(odometer.getTheta()));
 		if(ratio1 < 0.01 || ratio1 > -0.01){
 			ratio1 = 0;
 		}
 		double headingLeftToTurn1 = Math.asin(ratio1);
 		
 		turnTo(((Math.toDegrees(odometer.getTheta()-headingLeftToTurn1)+2*Math.PI)%(2*Math.PI)));
-		travelTo(odometer.getX() + UltrasonicPoller.getDist()*Math.cos(headingD) + this.bandCenter,
-				odometer.getY() + UltrasonicPoller.getDist()*Math.sin(headingD) + this.bandCenter);
+		travelTo(odometer.getX() + UltrasonicPoller.getDistFront()*Math.cos(headingD) + this.bandCenter,
+				odometer.getY() + UltrasonicPoller.getDistFront()*Math.sin(headingD) + this.bandCenter);
 		turnTo(((Math.toDegrees(odometer.getTheta()+Math.PI/2)+2*Math.PI)%(2*Math.PI)));
 	}
 	
@@ -239,6 +239,10 @@ public class Navigation extends Thread {
 	
 	//navigation standard conversion
 	public static double mathToCompass(double mathAngle){
+		/**
+		 * Was written because former odometer was in compass mode.
+		 * Now that the compass is in math mode, we don't need this anymore.
+		 */
 		return ((450-mathAngle)%360);
 	}
 	

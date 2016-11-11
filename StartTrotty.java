@@ -14,10 +14,10 @@ import lejos.robotics.SampleProvider;
 import trotty02.ColorPoller;
 import trotty02.LightLocalizer;
 import trotty02.ObjectID;
-import trotty02.ObjectSearch;
+//import trotty02.ObjectSearch;
 import trotty02.Odometer;
-import trotty02.OdometryDisplay;
-import trotty02.SimpleNavigation;
+import trotty02.Display;
+import trotty02.Navigation;
 import trotty02.USLocalizer;
 import trotty02.UltrasonicPoller;
 
@@ -30,7 +30,7 @@ public class StartTrotty {
 	private static final EV3LargeRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("A"));
 	private static final EV3LargeRegulatedMotor rightMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("D"));
 	private static final EV3LargeRegulatedMotor clawMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("B"));
-	private static final EV3LargeRegulatedMotor frontMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("C"));
+	private static final EV3LargeRegulatedMotor lightMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("C"));
 	private static final Port usPortFront = LocalEV3.get().getPort("S2");
 	private static final Port usPortSide = LocalEV3.get().getPort("S3");
 	private static final Port usPortBack = LocalEV3.get().getPort("S4");
@@ -73,99 +73,120 @@ public class StartTrotty {
 		SampleProvider colorValue = colorSensor.getMode("RGB");			// colorValue provides samples from this instance
 		float[] colorData = new float[colorValue.sampleSize()];			// colorData is the buffer in which data are returned
 		
-		int buttonChoice;
 		final TextLCD t = LocalEV3.get().getTextLCD();
 		
-		// setup the odometer, moving window and display
+		// setup the odometer, moving window and displaylay
 		Odometer odo = new Odometer(leftMotor, rightMotor, WHEEL_RADIUS, TRACK);
 		UltrasonicPoller usPoller = new UltrasonicPoller(usSensorFront, usDataFront, usSensorSide, usDataSide,
 				usSensorBack, usDataBack);
 		ColorPoller coPoller = new ColorPoller(colorValue, colorData);
-		OdometryDisplay odoDisp = new OdometryDisplay(odo, t, usPoller, coPoller);
-		SimpleNavigation simpleNavigation = new SimpleNavigation(leftMotor, rightMotor, WHEEL_RADIUS, TRACK, bandCenter,
+		Display display = new Display(odo, t, usPoller, coPoller);
+		Navigation Navigation = new Navigation(leftMotor, rightMotor, WHEEL_RADIUS, TRACK, bandCenter,
 				odo, true, false);
-		SimpleNavigation simpleNavigationLSL = new SimpleNavigation(leftMotor, rightMotor, WHEEL_RADIUS, TRACK, bandCenter,
+		Navigation NavigationLSL = new Navigation(leftMotor, rightMotor, WHEEL_RADIUS, TRACK, bandCenter,
 				odo, true, true);
 		
 		ObjectID objectID = new ObjectID(coPoller, usPoller, t);
-		USLocalizer usLocalizer = new USLocalizer(odo, usPoller, USLocalizer.LocalizationType.RISING_EDGE, simpleNavigationLSL);
-		LightLocalizer lsl = new LightLocalizer(odo, usPoller, colorValue, colorData, simpleNavigationLSL);
-		ObjectSearch objSearch = new ObjectSearch(objectID, usPoller, simpleNavigation, simpleNavigation,
-				odo, leftClaw, rightClaw);
+		USLocalizer usLocalizer = new USLocalizer(odo, usPoller, USLocalizer.LocalizationType.RISING_EDGE, NavigationLSL);
+		LightLocalizer lsl = new LightLocalizer(odo, usPoller, colorValue, colorData, lightMotor, NavigationLSL);
+		/*ObjectSearch objSearch = new ObjectSearch(objectID, usPoller, Navigation, Navigation,
+				odo, clawMotor);
+		*/
 		
-		/*
-		 * THE FOLLOWING ARE STUDS, CHOICES = WHAT STATE OF DAY IT IS
-		 * e.g. if(in lab){
-		 * 			objectID.setStateOfDay(ObjectID.Light.LAB);
-		 * 		}
-		 */
+		//First, choose what kind if light settings we're demoing in
+		
+		int lightingChoice;
 		
 		do {
-			// clear the display
+			// clear the displaylay
 			t.clear();
 
 			// ask the user which path is the robot following
 			t.drawString("< Left | Right >", 0, 0);
 			t.drawString("       |        ", 0, 1);
-			t.drawString("  Obj. |   Obj. ", 0, 2);
-			t.drawString("  ID.  | Search ", 0, 3);
-			t.drawString(" ______________ ", 0, 4);
-			t.drawString("     v Down     ", 0, 5);
-			t.drawString("   Obj. Search  ", 0, 6);
-			t.drawString("Without localiz.", 0, 7);
+			t.drawString("  Lab  | Morning", 0, 2);
+			t.drawString("----------------", 0, 3);
+			t.drawString("^  Up  |  Down v", 0, 4);
+			t.drawString("       |        ", 0, 5);
+			t.drawString(" Noon  |  Night ", 0, 6);
 
+			lightingChoice = Button.waitForAnyPress();
+		}
+		
+		while(lightingChoice != Button.ID_LEFT && lightingChoice != Button.ID_RIGHT
+				&& lightingChoice != Button.ID_DOWN && lightingChoice != Button.ID_UP);
+		
+		if(lightingChoice == Button.ID_LEFT){
+			objectID.setStateOfDay(ObjectID.Light.LAB);
+		}
+		else if(lightingChoice == Button.ID_RIGHT){
+			objectID.setStateOfDay(ObjectID.Light.MORNING);
+		}
+		else if(lightingChoice == Button.ID_DOWN){
+			objectID.setStateOfDay(ObjectID.Light.NIGHT);
+		}
+		else{ //lightingChoice == Button.ID_UP
+			objectID.setStateOfDay(ObjectID.Light.NOON);
+		}
+		
+		
+		//Now select which version to run
+		
+		int buttonChoice;
+		do{
+			// clear the display
+			t.clear();
+
+			// ask the user what they want to run
+			t.drawString("< Left | Right >", 0, 0);
+			t.drawString("       |        ", 0, 1);
+			t.drawString("Locali.|Odo test", 0, 2);
+			t.drawString("----------------", 0, 3);
+			t.drawString("^  Up  |  Down v", 0, 4);
+			t.drawString("       |  Full  ", 0, 5);
+			t.drawString(" Stub  |  Run  ", 0, 6);
+			
 			buttonChoice = Button.waitForAnyPress();
 		}
 		
-		while (buttonChoice != Button.ID_LEFT && buttonChoice != Button.ID_RIGHT && buttonChoice != Button.ID_DOWN);
+		while (buttonChoice != Button.ID_LEFT && buttonChoice != Button.ID_RIGHT &&
+				buttonChoice != Button.ID_UP && buttonChoice != Button.ID_DOWN);
 		
 		if(buttonChoice == Button.ID_LEFT){
 			
+			// testing localization only
 			odo.start();
-			odoDisp.start();
+			display.start();
 			usPoller.start();
 			coPoller.start();
 			
-			// perform the object identification
-			objectID.start();
+			// perform localization
+			usLocalizer.doLocalization();
+			lsl.doLocalization();
 		}
 		else if(buttonChoice == Button.ID_RIGHT){
 			
+			// simply testing the odometer
 			odo.start();
-			odoDisp.start();
+			display.start();
 			usPoller.start();
 			coPoller.start();
-			objectID.start();
 			
-			try { Thread.sleep(1000); } catch(Exception e){}
-			
-			Sound.setVolume(Sound.VOL_MAX);
-			
-			// 1. Localize and go to (0, 0) using rising edge
-			usLocalizer.doLocalization();
-			lsl.doLocalization();
-			
-			do{
-				t.drawString("Press Enter", 0, 7);
-			}
-			while(Button.waitForAnyPress() != Button.ID_ENTER);
-			
-			// 2. Perform the object search
-			objSearch.start();
+			leftMotor.flt(true);
+			rightMotor.flt();
 		}
-		else{
+		else if(buttonChoice == Button.ID_UP){
+			
+			// to fill if there's another test to run
+		}
+		else{ // buttonChoice == Button.ID_DOWN
 			odo.start();
-			odoDisp.start();
+			display.start();
 			usPoller.start();
 			coPoller.start();
 			objectID.start();
 			
-			try { Thread.sleep(1000); } catch(Exception e){}
-			
-			Sound.setVolume(Sound.VOL_MAX);
-			
-			// 1. Perform the object search
-			objSearch.start();
+			// Now wait for wifi before starting anything
 		}
 			
 		while (Button.waitForAnyPress() != Button.ID_ESCAPE);
