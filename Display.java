@@ -13,7 +13,7 @@ public class Display extends Thread{
 	private ColorPoller coPoller;
 
 	// constructor
-	public OdometryDisplay(Odometer odometer, TextLCD t, UltrasonicPoller usPoller, ColorPoller coPoller) {
+	public Display(Odometer odometer, TextLCD t, UltrasonicPoller usPoller, ColorPoller coPoller) {
 		this.odometer = odometer;
 		this.t = t;
 		this.usPoller = usPoller;
