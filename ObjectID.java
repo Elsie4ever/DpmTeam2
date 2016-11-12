@@ -6,11 +6,9 @@ import lejos.hardware.lcd.TextLCD;
 public class ObjectID extends Thread {
 	private ColorPoller coPoller;
 	private UltrasonicPoller usPoller;
-	private Odometer odo;
-	private Mapping map;
 	private TextLCD t;
 	private static final int THRESHOLD = 60;
-	private static final int DIST = 6; //4
+	private static final double DIST = 7.5; //4
 	private static double color;
 	private static final double COLOR_LAB = 1.75;
 	private static final double COLOR_MORNING = 1.75;
@@ -39,7 +37,6 @@ public class ObjectID extends Thread {
 				if(idObj()){
 					t.drawString("    Block", 1, 6); //Styrofoam block
 					//Sound.beep();
-					map.updateMapAt(odo.getX(),odo.getY(),odo.getTheta(),usPoller.getDistFront());
 				}
 				else{
 					t.drawString("Not Block", 1, 6);
