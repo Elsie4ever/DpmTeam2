@@ -19,7 +19,7 @@ public class Mapping {
 		return map[x][y];
 	}
 	
-	public void updateMapAt(int x, int y, int T, int distance){
+	public void updateMapAt(double x, double y, double T, double distance){
 		//takes in current bot position and usPoller distance
 		//updates the map in the square where it saw the block
 		map[(int)((x+distance*Math.cos(T))/30)][(int)((y+distance*Math.sin(T))/30)] = 1;
