@@ -46,7 +46,7 @@ public class LightLocalizer {
 		double distA, distB;
 		
 		// turn the light sensor to face the ground
-		lightMotor.rotate(90);
+		lightMotor.rotate(-90);
 		
 		// drive to location listed in tutorial
 		simNav.turnTo(270);
@@ -66,22 +66,26 @@ public class LightLocalizer {
 			if(colorData[0] <= BLACK_LINE & counter == 0){
 				angleX2 = odo.getTheta();
 				counter ++;
+				Sound.beep();
 				try { Thread.sleep(500); } catch(Exception e){}
 			}
 			else if(colorData[0] <= BLACK_LINE & counter == 1){
 				angleY1 = odo.getTheta();
 				counter ++;
+				Sound.beep();
 				try { Thread.sleep(500); } catch(Exception e){}
 			}
 			else if(colorData[0] <= BLACK_LINE & counter == 2){
 				angleX2 = odo.getTheta();
 				counter ++;
+				Sound.beep();
 				try { Thread.sleep(500); } catch(Exception e){}
 			}
 			else if(colorData[0] <= BLACK_LINE & counter == 3){
 				simNav.stopMov();
 				angleY2 = odo.getTheta();
 				counter ++;
+				Sound.beep();
 				break;
 			}
 		}
@@ -104,6 +108,6 @@ public class LightLocalizer {
 		simNav.stopMov();
 		
 		// return the light sensor to face the front
-		lightMotor.rotate(-90);
+		lightMotor.rotate(90);
 	}
 }
