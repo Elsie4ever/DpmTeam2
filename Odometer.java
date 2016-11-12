@@ -81,8 +81,8 @@ public class Odometer implements TimerListener {
 	 */
 	private void getDisplacementAndHeading(double[] data) {
 		int leftTacho, rightTacho;
-		leftTacho = leftMotor.getTachoCount();
-		rightTacho = rightMotor.getTachoCount();
+		leftTacho = -leftMotor.getTachoCount();
+		rightTacho = -rightMotor.getTachoCount();
 
 		data[0] = (leftTacho * leftRadius + rightTacho * rightRadius) * Math.PI / 360.0;
 		data[1] = (rightTacho * rightRadius - leftTacho * leftRadius) / width;
@@ -102,7 +102,7 @@ public class Odometer implements TimerListener {
 			theta = fixDegAngle(theta);
 
 			x += dDH[0] * Math.cos(Math.toRadians(theta));
-			y -= dDH[0] * Math.sin(Math.toRadians(theta));
+			y += dDH[0] * Math.sin(Math.toRadians(theta));
 		}
 
 		oldDH[0] += dDH[0];

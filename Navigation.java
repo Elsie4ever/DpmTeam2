@@ -24,8 +24,8 @@ public class Navigation extends Thread {
 		this.width = width;
 		this.bandCenter = bandCenter;
 		this.odometer = odometer;
-		this.leftMotor.setAcceleration(800);
-		this.rightMotor.setAcceleration(800);
+		this.leftMotor.setAcceleration(400);
+		this.rightMotor.setAcceleration(400);
 		this.avoid = avoid;
 		this.lsl = lsl;
 		if(this.lsl){
@@ -39,6 +39,7 @@ public class Navigation extends Thread {
 	}
 	
 	public void run(){
+		forward(60.96);
 	}
 	
 	public void travelTo(double x, double y){
@@ -145,8 +146,18 @@ public class Navigation extends Thread {
 	}
 	
 	public void forward(double dist){
-		leftMotor.rotate(convertDistance(wheelRadius, dist), true);
-		rightMotor.rotate(convertDistance(wheelRadius, dist));
+		leftMotor.rotate(-convertDistance(wheelRadius, dist), true);
+		rightMotor.rotate(-convertDistance(wheelRadius, dist), false);
+		
+		/*double curX = odometer.getX();
+		double curY = odometer.getY();
+		double deltaDist = 0;
+		
+		while(deltaDist < dist){
+			leftMotor.backward();
+			rightMotor.backward();
+			deltaDist = Math.sqrt(Math.pow(odometer.getX() - curX, 2) + Math.pow(odometer.getY() - curY, 2));
+		}*/
 	}
 	
 	public void backward(){
