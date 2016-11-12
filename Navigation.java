@@ -187,29 +187,29 @@ public class Navigation extends Thread {
 	public void turnCW(){
 		leftMotor.setSpeed(ROTATE_SPEED);
 		rightMotor.setSpeed(ROTATE_SPEED);
-		leftMotor.forward();
-		rightMotor.backward();
+		leftMotor.backward();
+		rightMotor.forward();
 	}
 	
 	public void turnCCW(){
 		leftMotor.setSpeed(ROTATE_SPEED);
 		rightMotor.setSpeed(ROTATE_SPEED);
-		rightMotor.forward();
-		leftMotor.backward();
+		rightMotor.backward();
+		leftMotor.forward();
 	}
 	
 	public void forward(){
 		leftMotor.setSpeed(FORWARD_SPEED);
 		rightMotor.setSpeed(FORWARD_SPEED);
-		rightMotor.forward();
-		leftMotor.forward();
+		rightMotor.backward();
+		leftMotor.backward();
 	}
 	
 	public void backward(){
 		leftMotor.setSpeed(FORWARD_SPEED);
 		rightMotor.setSpeed(FORWARD_SPEED);
-		rightMotor.backward();
-		leftMotor.backward();
+		rightMotor.forward();
+		leftMotor.forward();
 	}
 	
 	public void stopMov(){
