@@ -39,14 +39,13 @@ public class Display extends Thread{
 			t.drawString("Color:          ", 0, 4);
 
 			// display odometry information
-			t.drawString(String.valueOf(odometer.getX()).substring(0, 4), 3, 0);
-			t.drawString(String.valueOf(odometer.getY()).substring(0, 4), 3, 1);
-			t.drawString(String.valueOf(Math.toDegrees(odometer.getTheta())).substring(0, 4), 3, 2);
 			
-			t.drawString(String.valueOf(UltrasonicPoller.getDistFront()).substring(0, 4), 11, 3);
-
-			t.drawString(String.valueOf(coPoller.getColor()).substring(0, 4), 7, 4);
-
+			t.drawInt((int) odometer.getX(), 3, 0);
+			t.drawInt((int) odometer.getY(), 3, 1);
+			t.drawInt((int) odometer.getTheta(), 3, 2);
+			t.drawInt((int) UltrasonicPoller.getDistFront(), 11, 3);
+			t.drawInt((int) coPoller.getColor(), 7, 4);
+			
 			// throttle the OdometryDisplay
 			displayEnd = System.currentTimeMillis();
 			if (displayEnd - displayStart < DISPLAY_PERIOD) {

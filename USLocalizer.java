@@ -62,15 +62,6 @@ public class USLocalizer {
 			angleA = odo.getTheta() - heading;
 			
 			// switch direction and wait until it sees no wall
-			/*while(getWallDist() <= WALL_DIST){
-				simNav.turnCCW();
-				
-				if(getWallDist() > WALL_DIST){
-					simNav.stopMov();
-					break;
-				}
-			}*/
-			
 			while(getWallDist() <= WALL_DIST){
 				simNav.turnCCW();
 				
@@ -81,15 +72,6 @@ public class USLocalizer {
 			}
 			
 			// keep rotating until the robot sees a wall, then latch the angle
-			/*while(!(getWallDist() < WALL_DIST)){
-				simNav.turnCCW();
-				
-				if(getWallDist() <= WALL_DIST){
-					simNav.stopMov();
-					break;
-				}
-			}*/
-			
 			while(!(getWallDist() < WALL_DIST)){
 				simNav.turnCCW();
 				
@@ -100,9 +82,6 @@ public class USLocalizer {
 			}
 			
 			angleB = ((2*Math.PI - (odo.getTheta() - heading))%(2*Math.PI) + 2*Math.PI)%(2*Math.PI) + angleA;
-			
-			//readjust angleB to be the opposite of it since we're using the back sensor
-			//angleB = (angleB + Math.PI)%Math.PI;
 			
 			// Turn back to heading
 			simNav.turnTo(heading);
@@ -153,15 +132,6 @@ public class USLocalizer {
 			angleA = odo.getTheta() - heading;
 			
 			// switch direction and wait until it sees a wall
-			/*while(getWallDist() >= WALL_DIST){
-				simNav.turnCCW();
-				
-				if(getWallDist() < WALL_DIST){
-					simNav.stopMov();
-					break;
-				}
-			}*/
-			
 			while(getWallDist() >= WALL_DIST){
 				simNav.turnCCW();
 				
@@ -172,15 +142,6 @@ public class USLocalizer {
 			}
 			
 			// keep rotating until the robot sees no wall, then latch the angle
-			/*while(!(getWallDist() > WALL_DIST)){
-				simNav.turnCCW();
-				
-				if(getWallDist() >= WALL_DIST){
-					simNav.stopMov();
-					break;
-				}
-			}*/
-			
 			while(!(getWallDist() > WALL_DIST)){
 				simNav.turnCCW();
 				
@@ -191,9 +152,6 @@ public class USLocalizer {
 			}
 			
 			angleB = ((2*Math.PI - (odo.getTheta() - heading))%(2*Math.PI) + 2*Math.PI)%(2*Math.PI) + angleA;
-			
-			//readjust angleB to be the opposite of it since we're using the back sensor
-			//angleB = (angleB + Math.PI)%Math.PI;
 			
 			// Turn back to heading
 			simNav.turnTo(heading);
