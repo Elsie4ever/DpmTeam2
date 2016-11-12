@@ -52,11 +52,16 @@ public class LightLocalizer {
 		simNav.turnTo(270);
 		distA = UltrasonicPoller.getDistFront() + US_OFFSET_FRONT;
 		simNav.turnTo(0);
-		distB = UltrasonicPoller.getDistBack() + US_OFFSET_BACK;
+		//distB = UltrasonicPoller.getDistBack() + US_OFFSET_BACK;
+		distB = UltrasonicPoller.getDistFront() + US_OFFSET_FRONT;
+		
+		Sound.beepSequence();
 		
 		simNav.turnTo(45);
 		simNav.travelTo(odo.getX() + (SQUARE_DIST - distB), odo.getY() + (SQUARE_DIST - distA));
 		simNav.stopMov();
+		
+		Sound.beepSequenceUp();
 		
 		// start rotating and clock all 4 gridlines
 		simNav.turnCW();

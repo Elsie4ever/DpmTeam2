@@ -56,28 +56,47 @@ public class USLocalizer {
 			angleA = odo.getTheta() - heading;
 			
 			// switch direction and wait until it sees no wall
-			while(UltrasonicPoller.getDistBack() <= WALL_DIST + FRONT_SENSOR_OFFSET - BACK_SENSOR_OFFSET){
+			/*while(UltrasonicPoller.getDistBack() <= WALL_DIST + FRONT_SENSOR_OFFSET - BACK_SENSOR_OFFSET){
 				simNav.turnCCW();
 				
 				if(UltrasonicPoller.getDistBack() > WALL_DIST + FRONT_SENSOR_OFFSET - BACK_SENSOR_OFFSET){
 					simNav.stopMov();
 					break;
 				}
+			}*/
+			
+			while(UltrasonicPoller.getDistFront() <= WALL_DIST){
+				simNav.turnCCW();
+				
+				if(UltrasonicPoller.getDistFront() > WALL_DIST){
+					simNav.stopMov();
+					break;
+				}
 			}
 			
 			// keep rotating until the robot sees a wall, then latch the angle
-			while(!(UltrasonicPoller.getDistBack() < WALL_DIST + FRONT_SENSOR_OFFSET - BACK_SENSOR_OFFSET)){
+			/*while(!(UltrasonicPoller.getDistBack() < WALL_DIST + FRONT_SENSOR_OFFSET - BACK_SENSOR_OFFSET)){
 				simNav.turnCCW();
 				
 				if(UltrasonicPoller.getDistBack() <= WALL_DIST + FRONT_SENSOR_OFFSET - BACK_SENSOR_OFFSET){
 					simNav.stopMov();
 					break;
 				}
+			}*/
+			
+			while(!(UltrasonicPoller.getDistFront() < WALL_DIST)){
+				simNav.turnCCW();
+				
+				if(UltrasonicPoller.getDistFront() <= WALL_DIST){
+					simNav.stopMov();
+					break;
+				}
 			}
+			
 			angleB = ((2*Math.PI - (odo.getTheta() - heading))%(2*Math.PI) + 2*Math.PI)%(2*Math.PI) + angleA;
 			
 			//readjust angleB to be the opposite of it since we're using the back sensor
-			angleB = (angleB + Math.PI)%Math.PI;
+			//angleB = (angleB + Math.PI)%Math.PI;
 			
 			// Turn back to heading
 			simNav.turnTo(heading);
@@ -128,29 +147,47 @@ public class USLocalizer {
 			angleA = odo.getTheta() - heading;
 			
 			// switch direction and wait until it sees a wall
-			while(UltrasonicPoller.getDistBack() >= WALL_DIST + FRONT_SENSOR_OFFSET - BACK_SENSOR_OFFSET){
+			/*while(UltrasonicPoller.getDistBack() >= WALL_DIST + FRONT_SENSOR_OFFSET - BACK_SENSOR_OFFSET){
 				simNav.turnCCW();
 				
 				if(UltrasonicPoller.getDistBack() < WALL_DIST + FRONT_SENSOR_OFFSET - BACK_SENSOR_OFFSET){
 					simNav.stopMov();
 					break;
 				}
+			}*/
+			
+			while(UltrasonicPoller.getDistFront() >= WALL_DIST){
+				simNav.turnCCW();
+				
+				if(UltrasonicPoller.getDistFront() < WALL_DIST){
+					simNav.stopMov();
+					break;
+				}
 			}
 			
 			// keep rotating until the robot sees no wall, then latch the angle
-			while(!(UltrasonicPoller.getDistBack() > WALL_DIST + FRONT_SENSOR_OFFSET - BACK_SENSOR_OFFSET)){
+			/*while(!(UltrasonicPoller.getDistBack() > WALL_DIST + FRONT_SENSOR_OFFSET - BACK_SENSOR_OFFSET)){
 				simNav.turnCCW();
 				
 				if(UltrasonicPoller.getDistBack() >= WALL_DIST + FRONT_SENSOR_OFFSET - BACK_SENSOR_OFFSET){
 					simNav.stopMov();
 					break;
 				}
+			}*/
+			
+			while(!(UltrasonicPoller.getDistFront() > WALL_DIST)){
+				simNav.turnCCW();
+				
+				if(UltrasonicPoller.getDistFront() >= WALL_DIST){
+					simNav.stopMov();
+					break;
+				}
 			}
+			
 			angleB = ((2*Math.PI - (odo.getTheta() - heading))%(2*Math.PI) + 2*Math.PI)%(2*Math.PI) + angleA;
 			
 			//readjust angleB to be the opposite of it since we're using the back sensor
-			
-			angleB = (angleB + Math.PI)%Math.PI;
+			//angleB = (angleB + Math.PI)%Math.PI;
 			
 			// Turn back to heading
 			simNav.turnTo(heading);

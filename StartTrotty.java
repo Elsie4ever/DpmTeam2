@@ -75,8 +75,8 @@ public class StartTrotty {
 		
 		final TextLCD t = LocalEV3.get().getTextLCD();
 		
-		// setup the odometer, moving window and displaylay
-		Odometer odo = new Odometer(leftMotor, rightMotor, WHEEL_RADIUS, TRACK);
+		// setup the odometer, moving window and display
+		Odometer odo = new Odometer(leftMotor, rightMotor, 0, true, WHEEL_RADIUS, TRACK);
 		UltrasonicPoller usPoller = new UltrasonicPoller(usSensorFront, usDataFront, usSensorSide, usDataSide,
 				usSensorBack, usDataBack);
 		ColorPoller coPoller = new ColorPoller(colorValue, colorData);
@@ -87,7 +87,7 @@ public class StartTrotty {
 				odo, true, true);
 		
 		ObjectID objectID = new ObjectID(coPoller, usPoller, t);
-		USLocalizer usLocalizer = new USLocalizer(odo, usPoller, USLocalizer.LocalizationType.RISING_EDGE, NavigationLSL);
+		//USLocalizer usLocalizer = new USLocalizer(odo, usPoller, USLocalizer.LocalizationType.RISING_EDGE, NavigationLSL);
 		LightLocalizer lsl = new LightLocalizer(odo, usPoller, colorValue, colorData, lightMotor, NavigationLSL);
 		/*ObjectSearch objSearch = new ObjectSearch(objectID, usPoller, Navigation, Navigation,
 				odo, clawMotor);
@@ -139,12 +139,12 @@ public class StartTrotty {
 
 			// ask the user what they want to run
 			t.drawString("< Left | Right >", 0, 0);
-			t.drawString("       |        ", 0, 1);
+			t.drawString("Falling|        ", 0, 1);
 			t.drawString("Locali.|Odo test", 0, 2);
 			t.drawString("----------------", 0, 3);
 			t.drawString("^  Up  |  Down v", 0, 4);
-			t.drawString("       |  Full  ", 0, 5);
-			t.drawString(" Stub  |  Run  ", 0, 6);
+			t.drawString(" Rising|  Full  ", 0, 5);
+			t.drawString("Locali.|  Run  ", 0, 6);
 			
 			buttonChoice = Button.waitForAnyPress();
 		}
@@ -159,6 +159,9 @@ public class StartTrotty {
 			display.start();
 			usPoller.start();
 			coPoller.start();
+			
+			//Falling_Edge
+			USLocalizer usLocalizer = new USLocalizer(odo, usPoller, USLocalizer.LocalizationType.FALLING_EDGE, NavigationLSL);
 			
 			// perform localization
 			usLocalizer.doLocalization();
@@ -177,7 +180,18 @@ public class StartTrotty {
 		}
 		else if(buttonChoice == Button.ID_UP){
 			
-			// to fill if there's another test to run
+			// testing localization only
+			odo.start();
+			display.start();
+			usPoller.start();
+			coPoller.start();
+			
+			//Rising_Edge
+			USLocalizer usLocalizer = new USLocalizer(odo, usPoller, USLocalizer.LocalizationType.RISING_EDGE, NavigationLSL);
+			
+			// perform localization
+			usLocalizer.doLocalization();
+			lsl.doLocalization();
 		}
 		else{ // buttonChoice == Button.ID_DOWN
 			odo.start();
