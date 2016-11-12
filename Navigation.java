@@ -246,6 +246,9 @@ public class Navigation extends Thread {
 		return ((450-mathAngle)%360);
 	}
 	
+	
+	
+	
 	public double calcHeadingMath(double x, double y){
 		double xdir = x - odometer.getX();
 		double ydir = y - odometer.getY();
@@ -284,4 +287,44 @@ public class Navigation extends Thread {
 		
 		return toReturn;
 	}
+	public void travelToSquare(int x, int y){
+		correctX = (int) Math.signum(x-odometer.getXSquare());
+		correctY = (int) Math.signum(y-odometer.getYSquare());
+
+		this.travelToXSquare(x, correctX);
+		this.travelToYSquare(y, correctX);
+			
+
+		}
+	
+	private void travelToXSquare(int x, int correctX) {
+		if(correctX == 1){
+			this.turnTo(0, true);
+			//TODO: implement any adjustments to the odometer and actual turns here
+		}
+		if(correctX == -1){
+			this.turnTo(180, true);
+		}
+		
+		while (Math.abs(x - odometer.getX()) > 3 ) {
+		this.setSpeeds(FAST, FAST);
+		}
+		
+	}
+	
+	private void travelToYSquare(int y, int correctY) {
+		if(correctY == 1){
+			this.turnTo(90, true);
+			return;
+		}
+		if(correctY == -1){
+			this.turnTo(270, true);
+			return;
+		}
+		
+		while (Math.abs(y - odometer.getY()) > 3 ) {
+		this.setSpeeds(FAST, FAST);
+		}
+	}
+	
 }
