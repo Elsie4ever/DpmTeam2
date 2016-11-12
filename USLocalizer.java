@@ -17,6 +17,10 @@ public class USLocalizer {
 	private static final double BACK_SENSOR_OFFSET = 3.9;
 	private final double FE_OFFSET = 0; //-1*Math.PI/180;
 	private final double RE_OFFSET = 0; //-3.4*Math.PI/180;
+	private enum Sensor{
+		FRONT, BACK
+	}
+	private Sensor sensor;
 	
 	public USLocalizer(Odometer odo, UltrasonicPoller usPoller, LocalizationType locType, Navigation simNav) {
 		this.odo = odo;
@@ -29,12 +33,15 @@ public class USLocalizer {
 		double angleA, angleB;
 		double heading;
 		
+		//Check which sensor to sense with
+		selectSensor();
+		
 		if (locType == LocalizationType.FALLING_EDGE){
 			// rotate the robot until it sees no wall
-			while(UltrasonicPoller.getDistFront() <= WALL_DIST - FRONT_SENSOR_OFFSET){
+			while(getWallDist() <= WALL_DIST){
 				simNav.turnCW();
 				
-				if(UltrasonicPoller.getDistFront() > WALL_DIST - FRONT_SENSOR_OFFSET){
+				if(getWallDist() > WALL_DIST){
 					simNav.stopMov();
 					break;
 				}
@@ -44,10 +51,10 @@ public class USLocalizer {
 			heading = odo.getTheta(); // Remember the "heading"
 			
 			// keep rotating until the robot sees a wall, then latch the angle
-			while(!(UltrasonicPoller.getDistFront() < WALL_DIST - FRONT_SENSOR_OFFSET)){
+			while(!(getWallDist() < WALL_DIST)){
 				simNav.turnCW();
 				
-				if(UltrasonicPoller.getDistFront() <= WALL_DIST - FRONT_SENSOR_OFFSET){
+				if(getWallDist() <= WALL_DIST){
 					simNav.stopMov();
 					break;
 				}
@@ -55,38 +62,38 @@ public class USLocalizer {
 			angleA = odo.getTheta() - heading;
 			
 			// switch direction and wait until it sees no wall
-			/*while(UltrasonicPoller.getDistBack() <= WALL_DIST - BACK_SENSOR_OFFSET){
+			/*while(getWallDist() <= WALL_DIST){
 				simNav.turnCCW();
 				
-				if(UltrasonicPoller.getDistBack() > WALL_DIST - BACK_SENSOR_OFFSET){
+				if(getWallDist() > WALL_DIST){
 					simNav.stopMov();
 					break;
 				}
 			}*/
 			
-			while(UltrasonicPoller.getDistFront() <= WALL_DIST - FRONT_SENSOR_OFFSET){
+			while(getWallDist() <= WALL_DIST){
 				simNav.turnCCW();
 				
-				if(UltrasonicPoller.getDistFront() > WALL_DIST - FRONT_SENSOR_OFFSET){
+				if(getWallDist() > WALL_DIST){
 					simNav.stopMov();
 					break;
 				}
 			}
 			
 			// keep rotating until the robot sees a wall, then latch the angle
-			/*while(!(UltrasonicPoller.getDistBack() < WALL_DIST - BACK_SENSOR_OFFSET)){
+			/*while(!(getWallDist() < WALL_DIST)){
 				simNav.turnCCW();
 				
-				if(UltrasonicPoller.getDistBack() <= WALL_DIST - BACK_SENSOR_OFFSET){
+				if(getWallDist() <= WALL_DIST){
 					simNav.stopMov();
 					break;
 				}
 			}*/
 			
-			while(!(UltrasonicPoller.getDistFront() < WALL_DIST - FRONT_SENSOR_OFFSET)){
+			while(!(getWallDist() < WALL_DIST)){
 				simNav.turnCCW();
 				
-				if(UltrasonicPoller.getDistFront() <= WALL_DIST - FRONT_SENSOR_OFFSET){
+				if(getWallDist() <= WALL_DIST){
 					simNav.stopMov();
 					break;
 				}
@@ -122,10 +129,10 @@ public class USLocalizer {
 			 */
 			
 			// rotate the robot until it sees a wall
-			while(UltrasonicPoller.getDistFront() >= WALL_DIST - FRONT_SENSOR_OFFSET){
+			while(getWallDist() >= WALL_DIST){
 				simNav.turnCW();
 				
-				if(UltrasonicPoller.getDistFront() < WALL_DIST - FRONT_SENSOR_OFFSET){
+				if(getWallDist() < WALL_DIST){
 					simNav.stopMov();
 					break;
 				}
@@ -135,10 +142,10 @@ public class USLocalizer {
 			heading = odo.getTheta(); // Remember the "heading"
 			
 			// keep rotating until the robot sees no wall, then latch the angle
-			while(!(UltrasonicPoller.getDistFront() > WALL_DIST - FRONT_SENSOR_OFFSET)){
+			while(!(getWallDist() > WALL_DIST)){
 				simNav.turnCW();
 				
-				if(UltrasonicPoller.getDistFront() >= WALL_DIST - FRONT_SENSOR_OFFSET){
+				if(getWallDist() >= WALL_DIST){
 					simNav.stopMov();
 					break;
 				}
@@ -146,38 +153,38 @@ public class USLocalizer {
 			angleA = odo.getTheta() - heading;
 			
 			// switch direction and wait until it sees a wall
-			/*while(UltrasonicPoller.getDistBack() >= WALL_DIST - BACK_SENSOR_OFFSET){
+			/*while(getWallDist() >= WALL_DIST){
 				simNav.turnCCW();
 				
-				if(UltrasonicPoller.getDistBack() < WALL_DIST - BACK_SENSOR_OFFSET){
+				if(getWallDist() < WALL_DIST){
 					simNav.stopMov();
 					break;
 				}
 			}*/
 			
-			while(UltrasonicPoller.getDistFront() >= WALL_DIST - FRONT_SENSOR_OFFSET){
+			while(getWallDist() >= WALL_DIST){
 				simNav.turnCCW();
 				
-				if(UltrasonicPoller.getDistFront() < WALL_DIST - FRONT_SENSOR_OFFSET){
+				if(getWallDist() < WALL_DIST){
 					simNav.stopMov();
 					break;
 				}
 			}
 			
 			// keep rotating until the robot sees no wall, then latch the angle
-			/*while(!(UltrasonicPoller.getDistBack() > WALL_DIST - BACK_SENSOR_OFFSET)){
+			/*while(!(getWallDist() > WALL_DIST)){
 				simNav.turnCCW();
 				
-				if(UltrasonicPoller.getDistBack() >= WALL_DIST - BACK_SENSOR_OFFSET){
+				if(getWallDist() >= WALL_DIST){
 					simNav.stopMov();
 					break;
 				}
 			}*/
 			
-			while(!(UltrasonicPoller.getDistFront() > WALL_DIST - FRONT_SENSOR_OFFSET)){
+			while(!(getWallDist() > WALL_DIST)){
 				simNav.turnCCW();
 				
-				if(UltrasonicPoller.getDistFront() >= WALL_DIST - FRONT_SENSOR_OFFSET){
+				if(getWallDist() >= WALL_DIST){
 					simNav.stopMov();
 					break;
 				}
@@ -203,5 +210,28 @@ public class USLocalizer {
 			// Mend the theta with our testing mean
 			odo.setTheta(odo.getTheta() + RE_OFFSET);
 		}
+	}
+	
+	private void selectSensor(){
+		if(UltrasonicPoller.getDistFront() < WALL_DIST){
+			sensor = Sensor.FRONT;
+		}
+		else if(UltrasonicPoller.getDistBack() < WALL_DIST){
+			sensor = Sensor.BACK;
+		}
+		else{
+			sensor = Sensor.BACK;
+		}
+	}
+	
+	private double getWallDist(){
+		double dist;
+		if(sensor == Sensor.BACK){
+			dist = UltrasonicPoller.getDistBack();
+		}
+		else{ //sensor == Sensor.FRONT
+			dist = UltrasonicPoller.getDistFront();
+		}
+		return dist;
 	}
 }
