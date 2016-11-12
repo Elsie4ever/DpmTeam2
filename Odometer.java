@@ -102,7 +102,7 @@ public class Odometer implements TimerListener {
 			theta = fixDegAngle(theta);
 
 			x += dDH[0] * Math.cos(Math.toRadians(theta));
-			y += dDH[0] * Math.sin(Math.toRadians(theta));
+			y -= dDH[0] * Math.sin(Math.toRadians(theta));
 		}
 
 		oldDH[0] += dDH[0];
