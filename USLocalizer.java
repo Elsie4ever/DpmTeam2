@@ -34,7 +34,8 @@ public class USLocalizer {
 		double heading;
 		
 		//Check which sensor to sense with
-		selectSensor();
+		//selectSensor();
+		sensor = Sensor.BACK;
 		
 		if (locType == LocalizationType.FALLING_EDGE){
 			// rotate the robot until it sees no wall
@@ -100,14 +101,14 @@ public class USLocalizer {
 		}
 		
 		else { // RISING_EDGE
-			/*
-			 * The robot should turn until it sees the wall, then look for the
-			 * "rising edges:" the points where it no longer sees the wall.
-			 * This is very similar to the FALLING_EDGE routine, but the robot
-			 * will face toward the wall for most of it.
+			/**
+			 * Turn CCW until it sees the left wall.
+			 * Set that angle to zero.
+			 * Turn CW until it sees the right wall.
+			 * (LeftAngle - RightAngle)/2 = 225 degrees
 			 */
 			
-			// rotate the robot until it sees a wall
+			//Turn until it see a wall
 			while(getWallDist() >= WALL_DIST){
 				simNav.turnCW();
 				
@@ -117,21 +118,20 @@ public class USLocalizer {
 				}
 			}
 			
+			//Turn until it doens't see the wall
+			while(getWallDist() <= WALL_DIST){
+				simNav.turnCW();
+				
+				if(getWallDist() > WALL_DIST){
+					simNav.stopMov();
+					break;
+				}
+			}
+			
+			//Set that angle to zero
 			odo.setTheta(0);
-			heading = odo.getTheta(); // Remember the "heading"
 			
-			// keep rotating until the robot sees no wall, then latch the angle
-			while(!(getWallDist() > WALL_DIST)){
-				simNav.turnCW();
-				
-				if(getWallDist() >= WALL_DIST){
-					simNav.stopMov();
-					break;
-				}
-			}
-			angleA = odo.getTheta() - heading;
-			
-			// switch direction and wait until it sees a wall
+			//Turn until it sees a wall
 			while(getWallDist() >= WALL_DIST){
 				simNav.turnCCW();
 				
@@ -141,44 +141,35 @@ public class USLocalizer {
 				}
 			}
 			
-			// keep rotating until the robot sees no wall, then latch the angle
-			while(!(getWallDist() > WALL_DIST)){
+			//Turn until it doesn't see a wall
+			while(getWallDist() <= WALL_DIST){
 				simNav.turnCCW();
 				
-				if(getWallDist() >= WALL_DIST){
+				if(getWallDist() > WALL_DIST){
 					simNav.stopMov();
 					break;
 				}
 			}
 			
-			angleB = ((2*Math.PI - (odo.getTheta() - heading))%(2*Math.PI) + 2*Math.PI)%(2*Math.PI) + angleA;
+			double curTheta = Math.toRadians(225) + odo.getTheta()/2;
+			odo.setTheta(curTheta);
 			
-			// Turn back to heading
-			simNav.turnTo(heading);
-			
-			// calculate the actual heading
-			double curHeading = (angleB - angleA) - (Math.PI + (angleB - Math.PI/2)/2);
-			
-			// update the odometer position (example to follow:)
-			odo.setTheta(curHeading);
-			
-			//Turn to the x-axis
 			simNav.turnTo(0);
-			
-			// Mend the theta with our testing mean
-			odo.setTheta(odo.getTheta() + RE_OFFSET);
 		}
 	}
 	
 	private void selectSensor(){
 		if(UltrasonicPoller.getDistFront() < WALL_DIST){
 			sensor = Sensor.FRONT;
+			Sound.beepSequenceUp();
 		}
 		else if(UltrasonicPoller.getDistBack() < WALL_DIST){
 			sensor = Sensor.BACK;
+			Sound.beepSequence();
 		}
 		else{
 			sensor = Sensor.BACK;
+			Sound.beepSequence();
 		}
 	}
 	

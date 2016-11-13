@@ -57,39 +57,8 @@ public class Navigation extends Thread {
 			while (!(odometer.getX() < x + 3 && odometer.getX() > x - ERROR && odometer.getY() < y + 3 && odometer.getY() > y - ERROR)) {
 				leftMotor.setSpeed(FORWARD_SPEED);
 				rightMotor.setSpeed(FORWARD_SPEED);
-				leftMotor.forward();
-				rightMotor.forward();
-				
-				//continuously checks the angle and corrects while moving forward if needed
-				heading = calcHeadingMath(x, y);
-				if(!angleWithinBounds(odometer.getTheta()*180/Math.PI, heading + ERROR, heading - ERROR)){
-					turnTo(heading);   //continuously keeps on towards heading if off
-				}
-			}
-			rightMotor.stop(true);
-			leftMotor.stop();
-		}
-	}
-	
-	public void travelToAvoid(double x, double y){
-		/**This method causes the robot to travel to the absolute field location (x, y).
-		This method should continuously call turnTo(double theta) and then
-		set the motor speed to forward(straight). This will make sure that your
-		heading is updated until you reach your exact goal. (This method will poll
-		the odometer for information)*/
-		
-		synchronized(lock){
-			double heading = calcHeadingMath(x, y);
-			//use the coordinate system of the odometer
-			turnTo(heading);	
-			
-			while (!(odometer.getX() < x + 3 && odometer.getX() > x - ERROR && odometer.getY() < y + 3 && odometer.getY() > y - ERROR)) {
-				leftMotor.setSpeed(FORWARD_SPEED);
-				rightMotor.setSpeed(FORWARD_SPEED);
-				leftMotor.forward();
-				rightMotor.forward();
-				
-				//Avoid obstacles?
+				leftMotor.backward();
+				rightMotor.backward();
 				
 				//continuously checks the angle and corrects while moving forward if needed
 				heading = calcHeadingMath(x, y);
@@ -114,12 +83,12 @@ public class Navigation extends Thread {
 			
 			//Turns the robot
 			if (deltaTheta <= 180) {
-				leftMotor.rotate((int)convertAngle(wheelRadius, width, deltaTheta), true);
-				rightMotor.rotate((int)(-convertAngle(wheelRadius, width, deltaTheta)), false);
+				leftMotor.rotate((int)-convertAngle(wheelRadius, width, deltaTheta), true);
+				rightMotor.rotate((int)(convertAngle(wheelRadius, width, deltaTheta)), false);
 			}
 			else {
-				leftMotor.rotate((int)(-convertAngle(wheelRadius, width, 360-deltaTheta)), true);
-				rightMotor.rotate((int)(convertAngle(wheelRadius, width, 360-deltaTheta)), false);
+				leftMotor.rotate((int)(convertAngle(wheelRadius, width, 360-deltaTheta)), true);
+				rightMotor.rotate((int)(-convertAngle(wheelRadius, width, 360-deltaTheta)), false);
 			}
 		}	
 	}
@@ -146,18 +115,18 @@ public class Navigation extends Thread {
 	}
 	
 	public void forward(double dist){
-		leftMotor.rotate(-convertDistance(wheelRadius, dist), true);
-		rightMotor.rotate(-convertDistance(wheelRadius, dist), false);
+		//leftMotor.rotate(-convertDistance(wheelRadius, dist), true);
+		//rightMotor.rotate(-convertDistance(wheelRadius, dist), false);
 		
-		/*double curX = odometer.getX();
+		double curX = odometer.getX();
 		double curY = odometer.getY();
 		double deltaDist = 0;
 		
 		while(deltaDist < dist){
-			leftMotor.backward();
-			rightMotor.backward();
+			forward();
 			deltaDist = Math.sqrt(Math.pow(odometer.getX() - curX, 2) + Math.pow(odometer.getY() - curY, 2));
-		}*/
+		}
+		stopMov();
 	}
 	
 	public void backward(){
