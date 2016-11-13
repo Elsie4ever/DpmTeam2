@@ -8,7 +8,7 @@ import lejos.hardware.motor.EV3LargeRegulatedMotor;
 public class Navigation extends Thread {
 	private int FORWARD_SPEED;
 	private int ROTATE_SPEED;
-	private double wheelRadius, width, bandCenter;
+	private double wheelRadius, width, bandCenter, distance;
 	private EV3LargeRegulatedMotor leftMotor, rightMotor;
 	private Object lock = new Object();
 	private Odometer odometer;
@@ -24,8 +24,8 @@ public class Navigation extends Thread {
 		this.width = width;
 		this.bandCenter = bandCenter;
 		this.odometer = odometer;
-		this.leftMotor.setAcceleration(400);
-		this.rightMotor.setAcceleration(400);
+		this.leftMotor.setAcceleration(800);
+		this.rightMotor.setAcceleration(800);
 		this.avoid = avoid;
 		this.lsl = lsl;
 		if(this.lsl){
@@ -39,7 +39,6 @@ public class Navigation extends Thread {
 	}
 	
 	public void run(){
-		forward(60.96);
 	}
 	
 	public void travelTo(double x, double y){
@@ -51,14 +50,67 @@ public class Navigation extends Thread {
 		
 		synchronized(lock){
 			double heading = calcHeadingMath(x, y);
+			double currentX=this.odometer.getX();
+			double currentY=this.odometer.getY();
+			double deltaX=x-currentX;
+			double deltaY=y-currentY;
+			distance=Math.sqrt(Math.pow(deltaX,2)+Math.pow(deltaY,2));
+			turnTo(heading);
+			leftMotor.setSpeed(FORWARD_SPEED);
+			rightMotor.setSpeed(FORWARD_SPEED);
+			leftMotor.forward();
+			rightMotor.forward();
+			leftMotor.rotate(convertDistance(wheelRadius, distance), true);
+			rightMotor.rotate(convertDistance(wheelRadius, distance), false);
+			//use the coordinate system of the odometer
+				
+			
+			/*while (!(odometer.getX() < x + 3 && odometer.getX() > x - ERROR && odometer.getY() < y + 3 && odometer.getY() > y - ERROR)) {
+				leftMotor.setSpeed(FORWARD_SPEED);
+				rightMotor.setSpeed(FORWARD_SPEED);
+				leftMotor.forward();
+				rightMotor.forward();
+				
+				//continuously checks the angle and corrects while moving forward if needed
+				heading = calcHeadingMath(x, y);
+				if(!angleWithinBounds(odometer.getTheta()*180/Math.PI, heading + ERROR, heading - ERROR)){
+					turnTo(heading);   //continuously keeps on towards heading if off
+				}
+			}*/
+			rightMotor.stop(true);
+			leftMotor.stop();
+		}
+	}
+	
+	public void travelToAvoid(double x, double y){
+		/**This method causes the robot to travel to the absolute field location (x, y).
+		This method should continuously call turnTo(double theta) and then
+		set the motor speed to forward(straight). This will make sure that your
+		heading is updated until you reach your exact goal. (This method will poll
+		the odometer for information)*/
+		
+		synchronized(lock){
+			double heading = calcHeadingMath(x, y);
+			double currentX=this.odometer.getX();
+			double currentY=this.odometer.getY();
+			double deltaX=x-currentX;
+			double deltaY=y-currentY;
+			
 			//use the coordinate system of the odometer
 			turnTo(heading);	
+			
+			
 			
 			while (!(odometer.getX() < x + 3 && odometer.getX() > x - ERROR && odometer.getY() < y + 3 && odometer.getY() > y - ERROR)) {
 				leftMotor.setSpeed(FORWARD_SPEED);
 				rightMotor.setSpeed(FORWARD_SPEED);
-				leftMotor.backward();
-				rightMotor.backward();
+				leftMotor.forward();
+				rightMotor.forward();
+				
+				//Avoid obstacles
+				if(UltrasonicPoller.getDistFront() < this.width){
+					avoid();
+				}
 				
 				//continuously checks the angle and corrects while moving forward if needed
 				heading = calcHeadingMath(x, y);
@@ -83,14 +135,72 @@ public class Navigation extends Thread {
 			
 			//Turns the robot
 			if (deltaTheta <= 180) {
-				leftMotor.rotate((int)-convertAngle(wheelRadius, width, deltaTheta), true);
-				rightMotor.rotate((int)(convertAngle(wheelRadius, width, deltaTheta)), false);
+				leftMotor.rotate((int)convertAngle(wheelRadius, width, deltaTheta), true);
+				rightMotor.rotate((int)(-convertAngle(wheelRadius, width, deltaTheta)), false);
 			}
 			else {
-				leftMotor.rotate((int)(convertAngle(wheelRadius, width, 360-deltaTheta)), true);
-				rightMotor.rotate((int)(-convertAngle(wheelRadius, width, 360-deltaTheta)), false);
+				leftMotor.rotate((int)(-convertAngle(wheelRadius, width, 360-deltaTheta)), true);
+				rightMotor.rotate((int)(convertAngle(wheelRadius, width, 360-deltaTheta)), false);
 			}
 		}	
+	}
+	
+	public void avoid(){
+		double headingA, headingB, headingC, headingD;
+		
+		// Note current heading
+		headingA = odometer.getTheta();
+		
+		//Turn CCW until you don't see a wall
+		while(UltrasonicPoller.getDistFront()*Math.sin(odometer.getTheta()) < this.bandCenter){
+			turnCCW();
+		}
+		stopMov();
+		
+		// Note where the wall stops
+		headingB = odometer.getTheta();
+		
+		//Calculate the heading left to turn to be perpendicular
+		double ratio = this.bandCenter/(UltrasonicPoller.getDistFront()*Math.sin(odometer.getTheta()));
+		if(ratio < 0.01 || ratio > -0.01){
+			ratio = 0;
+		}
+		double headingLeftToTurn = Math.asin(ratio);
+		
+		turnTo(((Math.toDegrees(odometer.getTheta()-headingLeftToTurn)+2*Math.PI)%(2*Math.PI)));
+		travelTo(odometer.getX() + UltrasonicPoller.getDistFront()*Math.cos(headingB) + this.bandCenter,
+				odometer.getY() + UltrasonicPoller.getDistFront()*Math.sin(headingB) + this.bandCenter);
+		turnTo(((Math.toDegrees(odometer.getTheta()+Math.PI/2)+2*Math.PI)%(2*Math.PI)));
+		
+		//Turn CCW until you see a wall
+		while(UltrasonicPoller.getDistFront()*Math.sin(odometer.getTheta()) >= this.bandCenter){
+			turnCCW();
+		}
+		stopMov();
+		
+		// Note current heading
+		headingC = odometer.getTheta();
+		
+		//Turn CCW until you don't see a wall
+		while(UltrasonicPoller.getDistFront()*Math.sin(odometer.getTheta()) < this.bandCenter){
+			turnCCW();
+		}
+		stopMov();
+		
+		// Note where the wall stops
+		headingD = odometer.getTheta();
+		
+		//Calculate the heading left to turn to be perpendicular
+		double ratio1 = this.bandCenter/(UltrasonicPoller.getDistFront()*Math.sin(odometer.getTheta()));
+		if(ratio1 < 0.01 || ratio1 > -0.01){
+			ratio1 = 0;
+		}
+		double headingLeftToTurn1 = Math.asin(ratio1);
+		
+		turnTo(((Math.toDegrees(odometer.getTheta()-headingLeftToTurn1)+2*Math.PI)%(2*Math.PI)));
+		travelTo(odometer.getX() + UltrasonicPoller.getDistFront()*Math.cos(headingD) + this.bandCenter,
+				odometer.getY() + UltrasonicPoller.getDistFront()*Math.sin(headingD) + this.bandCenter);
+		turnTo(((Math.toDegrees(odometer.getTheta()+Math.PI/2)+2*Math.PI)%(2*Math.PI)));
 	}
 	
 	public void turnCW(){
@@ -112,21 +222,6 @@ public class Navigation extends Thread {
 		rightMotor.setSpeed(FORWARD_SPEED);
 		rightMotor.backward();
 		leftMotor.backward();
-	}
-	
-	public void forward(double dist){
-		//leftMotor.rotate(-convertDistance(wheelRadius, dist), true);
-		//rightMotor.rotate(-convertDistance(wheelRadius, dist), false);
-		
-		double curX = odometer.getX();
-		double curY = odometer.getY();
-		double deltaDist = 0;
-		
-		while(deltaDist < dist){
-			forward();
-			deltaDist = Math.sqrt(Math.pow(odometer.getX() - curX, 2) + Math.pow(odometer.getY() - curY, 2));
-		}
-		stopMov();
 	}
 	
 	public void backward(){
@@ -208,47 +303,4 @@ public class Navigation extends Thread {
 		
 		return toReturn;
 	}
-	
-	public void travelToSquare(int x, int y){
-		int correctX = (int) Math.signum(x-odometer.getX());
-		int correctY = (int) Math.signum(y-odometer.getY());
-
-		this.travelToXSquare(x, correctX);
-		this.travelToYSquare(y, correctY);
-			
-
-		}
-	
-	private void travelToXSquare(int x, int correctX) {
-		if(correctX == 1){
-			this.turnTo(0);
-			//TODO: implement any adjustments to the odometer and actual turns here
-		}
-		if(correctX == -1){
-			this.turnTo(180);
-		}
-		
-		while (Math.abs(x - odometer.getX()) > 3 ) {
-		leftMotor.setSpeed(FORWARD_SPEED);
-		rightMotor.setSpeed(FORWARD_SPEED);
-		}
-		
-	}
-	
-	private void travelToYSquare(int y, int correctY) {
-		if(correctY == 1){
-			this.turnTo(90);
-			return;
-		}
-		if(correctY == -1){
-			this.turnTo(270);
-			return;
-		}
-		
-		while (Math.abs(y - odometer.getY()) > 3 ) {
-		leftMotor.setSpeed(FORWARD_SPEED);
-		rightMotor.setSpeed(FORWARD_SPEED);
-		}
-	}
-	
 }
