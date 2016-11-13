@@ -56,7 +56,7 @@ public class Navigation extends Thread {
 			double deltaY=y-currentY;
 			distance=Math.sqrt(Math.pow(deltaX,2)+Math.pow(deltaY,2));
 			turnTo(heading);
-			leftMotor.setSpeed(FORWARD_SPEED);
+			leftMotor.setSpeed(FORWARD_SPEED);//might not need this
 			rightMotor.setSpeed(FORWARD_SPEED);
 			leftMotor.forward();
 			rightMotor.forward();
