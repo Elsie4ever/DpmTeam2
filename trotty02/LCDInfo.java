@@ -14,8 +14,13 @@ public class LCDInfo implements TimerListener{
 	// arrays for displaying data
 	private double [] pos;
 	private String detection;
+	private UltrasonicPoller usPoller;
+	private LightPoller lightPoller;
+	private float [] sample;
 	
-	public LCDInfo(Odometer odo) {
+	public LCDInfo(Odometer odo, UltrasonicPoller usPoller, float [] sample) {
+		this.usPoller = usPoller;
+		this.sample = sample;
 		this.odo = odo;
 		this.lcdTimer = new Timer(LCD_REFRESH, this);
 		// initialise the arrays for displaying data
@@ -35,17 +40,27 @@ public class LCDInfo implements TimerListener{
 		LCD.drawInt((int)(pos[0]), 3, 0);
 		LCD.drawInt((int)(pos[1]), 3, 1);
 		LCD.drawInt((int)pos[2], 3, 2);
+		
+		LCD.drawString("DistFront: ", 0, 3);
+		LCD.drawString("DistSide: ", 0, 4);
+		LCD.drawInt((int) usPoller.getDistFront(), 11, 3);
+		LCD.drawInt((int) usPoller.getDistSide(), 10, 4);
+		
+		LCD.drawString("RBG: ", 0, 5);
+		LCD.drawInt((int) Math.floor(sample[1]), 5, 5);
+		
+		
 		if(odo.seesSomething()){
-		LCD.drawString("Object Detected.", 0,5);
+		LCD.drawString("Object Detected.", 0,6);
 			if(odo.seesBlock()){
-				LCD.drawString("Block!", 0,6);
+				LCD.drawString("Block!", 0,7);
 			}
 			else{
-				LCD.drawString("Not Block!", 0,6);
+				LCD.drawString("Not Block!", 0,7);
 			}
 		}
 		else{
-			LCD.drawString("No Object", 0, 5);
+			LCD.drawString("No Object", 0, 6);
 		}
 		
 		
