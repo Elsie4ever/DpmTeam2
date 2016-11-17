@@ -15,7 +15,11 @@ import lejos.hardware.motor.*;
 //  of 1/70mS or about 14 Hz.
 //
 
-
+/**
+ * 
+ * @author Team 02
+ *
+ */
 public class UltrasonicPoller extends Thread{
 
 	private SampleProvider usFront;
@@ -187,7 +191,7 @@ public class UltrasonicPoller extends Thread{
 	}
 	
 	/**
-	 * Inputs the distance value into the correct window
+	 * Inputs the distance value into the correct window. The type argument denotes the sensor direction.
 	 * @param distance {double} Inputs the distance value into the correct window
 	 * @param type {Sensor} window corresponding to the usSensor that gave the input
 	 */
@@ -213,7 +217,7 @@ public class UltrasonicPoller extends Thread{
 	}
 	
 	/**
-	 * Outputs if an object has been detected.
+	 * Returns a boolean object if an object has been detected.
 	 * @return seesSomething {boolean} true if detected, false if not
 	 */
 	public boolean seesSomething(){ //is there an object at all
