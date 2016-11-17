@@ -8,7 +8,7 @@
  * 
  * Class which controls the odometer for the robot
  * 
- * Odometer defines cooridinate system as such...
+ * Odometer defines coordinate system as such...
  * 
  * 					90Deg:pos y-axis
  * 							|
@@ -44,6 +44,15 @@ public class Odometer implements TimerListener {
 
 	
 	// constructor
+	/**
+	 * Constructor for the odometer class
+	 * @param leftMotor the left motor of the robot
+	 * @param rightMotor the right motor of the robot
+	 * @param INTERVAL the length at which it parses the information read
+	 * @param autostart boolean value of whether the odometer should start on its own
+	 * @param usPoller an ultrasonic poller
+	 * @param lsPoller a light poller
+	 */
 	public Odometer (EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor, int INTERVAL, boolean autostart,
 			UltrasonicPoller usPoller, LightPoller lsPoller) {
 		this.lsPoller = lsPoller;
@@ -51,7 +60,7 @@ public class Odometer implements TimerListener {
 		this.leftMotor = leftMotor;
 		this.rightMotor = rightMotor;
 		
-		// default values, modify for your robot
+		
 		this.rightRadius = 2.1;
 		this.leftRadius = 2.1;
 		this.width = 13.5;
@@ -70,7 +79,9 @@ public class Odometer implements TimerListener {
 			this.timer = null;
 	}
 	
-	// functions to start/stop the timerlistener
+	/**
+	 * functions to start/stop the timerlistener
+	 */
 	public void stop() {
 		if (this.timer != null)
 			this.timer.stop();
@@ -80,7 +91,7 @@ public class Odometer implements TimerListener {
 			this.timer.start();
 	}
 	
-	/*
+	/**
 	 * Calculates displacement and heading as title suggests
 	 */
 	private void getDisplacementAndHeading(double[] data) {
@@ -92,7 +103,7 @@ public class Odometer implements TimerListener {
 		data[1] = (rightTacho * rightRadius - leftTacho * leftRadius) / width;
 	}
 	
-	/*
+	/**
 	 * Recompute the odometer values using the displacement and heading changes
 	 */
 	public void timedOut() {
@@ -113,28 +124,41 @@ public class Odometer implements TimerListener {
 		oldDH[1] += dDH[1];
 	}
 
-	// return X value
+	/**
+	 * return the X value
+	 * @return the x value determined by the odometer
+	 */
 	public double getX() {
 		synchronized (this) {
 			return x;
 		}
 	}
 
-	// return Y value
+	/**
+	 * return the Y value
+	 * @return the y value determined by the odometer
+	 */
 	public double getY() {
 		synchronized (this) {
 			return y;
 		}
 	}
 
-	// return theta value
+	/**
+	 * return the theta value
+	 * @return the theta value determined by the odometer
+	 */
 	public double getAng() {
 		synchronized (this) {
 			return theta;
 		}
 	}
 
-	// set x,y,theta
+	/**
+	 * set the X, Y and theta values
+	 * @param position an array that contains the X value, the Y value and the theta
+	 * @param update boolean array that states whether each corresponding value should be updated
+	 */
 	public void setPosition(double[] position, boolean[] update) {
 		synchronized (this) {
 			if (update[0])
@@ -147,6 +171,10 @@ public class Odometer implements TimerListener {
 	}
 
 	// return x,y,theta
+	/**
+	 * returns nothing, stores X, Y and theta data into input array
+	 * @param position the array in which X, Y and theta are stored
+	 */
 	public void getPosition(double[] position) {
 		synchronized (this) {
 			position[0] = x;
@@ -154,7 +182,10 @@ public class Odometer implements TimerListener {
 			position[2] = theta;
 		}
 	}
-
+	/**
+	 * returns a double array containing X, Y and theta
+	 * @return the x, y and theta values
+	 */
 	public double[] getPosition() {
 		synchronized (this) {
 			return new double[] { x, y, theta };
