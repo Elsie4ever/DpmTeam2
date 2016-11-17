@@ -5,6 +5,11 @@ import lejos.hardware.lcd.TextLCD;
 import lejos.utility.Timer;
 import lejos.utility.TimerListener;
 
+/**
+ * 
+ * @author Team 02
+ *
+ */
 public class LCDInfo implements TimerListener{
 	public static final int LCD_REFRESH = 100;
 	private Odometer odo;
@@ -16,7 +21,12 @@ public class LCDInfo implements TimerListener{
 	private String detection;
 	private UltrasonicPoller usPoller;
 	private LightPoller lightPoller;
-	
+	/**
+	 * Constructor for the LDCInfo class, also starting the LCD timer.
+	 * @param odo odometer object
+	 * @param usPoller ultrasonic poller object
+	 * @param lightPoller light poller object
+	 */
 	public LCDInfo(Odometer odo, UltrasonicPoller usPoller, LightPoller lightPoller) {
 		this.usPoller = usPoller;
 		this.lightPoller = lightPoller;
@@ -28,7 +38,9 @@ public class LCDInfo implements TimerListener{
 		// start the timer
 		lcdTimer.start();
 	}
-	
+	/**
+	 * Displays on screen what the robot perceives
+	 */
 	public void timedOut() { 
 		odo.getPosition(pos);
 		
@@ -50,12 +62,12 @@ public class LCDInfo implements TimerListener{
 		
 		
 		if(odo.seesSomething()){
-		LCD.drawString("Object Detected.", 0,6);
+		LCD.drawString("Object Detected.", 0, 6);
 			if(odo.seesBlock()){
-				LCD.drawString("Block!", 0,7);
+				LCD.drawString("Block!", 0, 7);
 			}
 			else{
-				LCD.drawString("Not Block!", 0,7);
+				LCD.drawString("Not Block!", 0, 7);
 			}
 		}
 		else{
