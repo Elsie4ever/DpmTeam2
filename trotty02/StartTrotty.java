@@ -28,6 +28,10 @@ public class StartTrotty {
 	private static final EV3ColorSensor cS = new EV3ColorSensor(LocalEV3.get().getPort("S1"));
 	final static double sensorToAxis = 10.5;
 	static boolean captured = false;
+	
+	private static final int bandCenter = 20;			// Offset from the wall (cm)
+	private static final int bandWidth = 12;			// Width of dead band (cm)
+	
 
 
 	public static void main(String[] args) {
@@ -86,11 +90,11 @@ public class StartTrotty {
 
 			// tell the user to press right when ready to start
 			t.drawString("< Left | Right >", 0, 0);
-			t.drawString("       |        ", 0, 1);
-			t.drawString(" local | turn   ", 0, 2);//right uses falling edge
+			t.drawString(" Rising|  Avoid ", 0, 1);
+			t.drawString("Locali.|  Test  ", 0, 2);
 			t.drawString("       |        ", 0, 4);
-			t.drawString("   up  |forward ", 0, 5);
-			t.drawString("  60   |        ", 0, 6);
+			t.drawString("       |        ", 0, 5);
+			t.drawString("       |        ", 0, 6);
 
 
 			buttonChoice = Button.waitForAnyPress();
@@ -100,13 +104,10 @@ public class StartTrotty {
 
 		if (buttonChoice == Button.ID_LEFT) {
 			odo.start();
-
 			usPoller.start();
 			lsPoller.start();
 			LCDInfo lcd = new LCDInfo(odo);
-
-
-
+			
 			(new Thread() {
 				public void run() {
 					USLocalizer usl = new USLocalizer(odo, usPoller, USLocalizer.LocalizationType.RISING_EDGE, navigator);
@@ -115,26 +116,24 @@ public class StartTrotty {
 					Button.waitForAnyPress();
 					// perform the light sensor localization
 					LightLocalizer lsl = new LightLocalizer(odo,colorSensor,sample);
-					lsl.doLocalization();	
-
-					
-
-	
+					lsl.doLocalization();
 				}	
 			}).start();
-			while (Button.waitForAnyPress() != Button.ID_ESCAPE);
-			System.exit(0);	
 
 		} else if (buttonChoice == Button.ID_RIGHT) {
 			odo.start();
-			//LightLocalizer ll = new LightLocalizer(odo, navigator, 5.0);
-			USLocalizer usl = new USLocalizer(odo, usPoller, USLocalizer.LocalizationType.RISING_EDGE, navigator);
-			ObjectFinder of = new ObjectFinder(leftMotor, rightMotor, navigator,
-					odo, usPoller, usl, 2.1, 15.0);
-			of.squareDriver();
-			while (Button.waitForAnyPress() != Button.ID_ESCAPE);
-			System.exit(0);	
+			usPoller.start();
+			lsPoller.start();
+			LCDInfo lcd = new LCDInfo(odo);
+			
+			Avoidance avoidance = new Avoidance(usPoller, leftMotor, rightMotor, bandCenter, bandWidth);
+			avoidance.setAvoid(true);
+			
+			avoidance.start();
 		}
+		
+		while (Button.waitForAnyPress() != Button.ID_ESCAPE);
+		System.exit(0);	
 }
 
 }
