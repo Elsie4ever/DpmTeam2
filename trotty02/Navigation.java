@@ -155,7 +155,7 @@ public void goForward(double distance) {
 }
 
 public void avoid(UltrasonicPoller usPoller){
-	double distance = usPoller.getDistance();
+	double distance = usPoller.getDistFront();
 
 	this.travelTo(0,0);
 	//backs up for space

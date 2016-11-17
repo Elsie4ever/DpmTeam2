@@ -12,15 +12,17 @@ public class USLocalizer {
 	private SampleProvider usSensor;
 	private float[] usData;
 	private LocalizationType locType;
-	private UltrasonicPoller usPoller = new UltrasonicPoller(usSensor, usData);
+	private UltrasonicPoller usPoller;
 	private Navigation navigator = null;
 
-	public USLocalizer(Odometer odo,  SampleProvider usSensor, float[] usData, LocalizationType locType, Navigation navigator) {
+	public USLocalizer(Odometer odo,  SampleProvider usSensor, float[] usData, LocalizationType locType, Navigation navigator,
+			UltrasonicPoller usPoller) {
 		this.odo = odo;
 		this.usSensor = usSensor;
 		this.usData = usData;
 		this.locType = locType;
 		this.navigator = navigator;
+		this.usPoller = usPoller;
 	}
 	public USLocalizer(Odometer odo,UltrasonicPoller usPoller, LocalizationType locType, Navigation navigator) {
 		this.odo = odo;
@@ -37,7 +39,7 @@ public class USLocalizer {
 
 		if (locType == LocalizationType.FALLING_EDGE) {
 
-			while(usPoller.seesSomething() || usPoller.getDistance() == 0){ //while it sees a wall, keep rotating
+			while(usPoller.seesSomething() || usPoller.getDistFront() == 0){ //while it sees a wall, keep rotating
 				navigator.turnTo(odo.getAng() + 15, true);
 			}
 
@@ -84,7 +86,7 @@ public class USLocalizer {
 			 * This is very similar to the FALLING_EDGE routine, but the robot
 			 * will face toward the wall for most of it.
 			 */
-			while(usPoller.seesSomething() || usPoller.getDistance() == 0){ //while it sees a wall, keep rotating
+			while(usPoller.seesSomething() || usPoller.getDistFront() == 0){ //while it sees a wall, keep rotating
 				navigator.turnTo(odo.getAng() + 10, true);
 			}
 
@@ -111,10 +113,10 @@ public class USLocalizer {
 		}
 		
 	navigator.turnTo(180, true);
-	odo.setPosition(new double[] {usPoller.distance+7, 0, 0}, new boolean[]{true, false, false}); 
+	odo.setPosition(new double[] {usPoller.getDistFront()+7, 0, 0}, new boolean[]{true, false, false}); 
 		//the 7 compensates for hardware inaccuracies
 	navigator.turnTo(270, true);
-	odo.setPosition(new double[] {0, usPoller.distance+7, 0}, new boolean[]{false, true, false}); 
+	odo.setPosition(new double[] {0, usPoller.getDistFront()+7, 0}, new boolean[]{false, true, false}); 
 	
 	navigator.turnTo(0, true);
     

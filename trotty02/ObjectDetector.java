@@ -19,14 +19,14 @@ public class ObjectDetector {
 	//float[] sample = new float[sampleSize];
 	//TextLCD t = LocalEV3.get().getTextLCD();
 
-	public ObjectDetector(SampleProvider usSensor, float[] usData) {
+	public ObjectDetector(SampleProvider usSensor, float[] usData, UltrasonicPoller usPoller) {
 		this.usSensor = usSensor;
 		this.usData = usData;
+		this.usPoller = usPoller;
 	}
 	public String detectObj(){
-		this.usPoller = new UltrasonicPoller(usSensor, usData);
 		//if the robot sees something, stay in loop
-		if(usPoller.seesSomething() || usPoller.getDistance() == 0){
+		if(usPoller.seesSomething() || usPoller.getDistFront() == 0){
 			detectionMessage = "Object Detected";
 			return detectionMessage;
 		}
