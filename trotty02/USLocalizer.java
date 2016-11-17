@@ -3,7 +3,11 @@ package trotty02;
 import lejos.robotics.SampleProvider;
 import trotty02.USLocalizer.LocalizationType;
 import trotty02.UltrasonicPoller;
-
+/**
+ * 
+ * @author Team 02
+ *
+ */
 public class USLocalizer {
 	public enum LocalizationType { FALLING_EDGE, RISING_EDGE };
 	public static double ROTATION_SPEED = 30;
@@ -14,20 +18,26 @@ public class USLocalizer {
 	private LocalizationType locType;
 	private UltrasonicPoller usPoller;
 	private Navigation navigator = null;
-
+	/**
+	 * constructor for USLocalizer class
+	 * @param odo odometer object that prints location on the board
+	 * @param usPoller ultrasonic poller that reads information from the ultrasonic sensor
+	 * @param locType type of localization either rising edge or falling edge
+	 * @param navigator navigator object that allows the robot to move around
+	 */
 	public USLocalizer(Odometer odo,UltrasonicPoller usPoller, LocalizationType locType, Navigation navigator) {
 		this.odo = odo;
 		this.usPoller = usPoller;
 		this.locType = locType;
 		this.navigator = navigator;
 	}
-
+	/**
+	 * details the strategy of falling edge and rising edge localization techniques
+	 */
 	public void doLocalization() {
 		double [] pos = new double [3];
 		double angleA, angleB;
-
-
-
+		
 		if (locType == LocalizationType.FALLING_EDGE) {
 
 			while(usPoller.seesSomething() || usPoller.getDistFront() == 0){ //while it sees a wall, keep rotating
@@ -117,7 +127,10 @@ public class USLocalizer {
 	//navigator.turnTo(0, true);
 	
 	}
-
+	/**
+	 * Returns a float value that represents the distance read by the ultrasonic sensor
+	 * @return the distance read by the ultrasonic sensor 
+	 */
 	private float getFilteredData() {
 		usSensor.fetchSample(usData, 0);
 		float distance = usData[0];
