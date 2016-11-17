@@ -1,7 +1,11 @@
 package trotty02;
 
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
-
+/**
+ * 
+ * @author Shi Yu
+ *
+ */
 public class Avoidance extends Thread{
 	
 	private boolean avoid = false;
@@ -13,7 +17,14 @@ public class Avoidance extends Thread{
 	private int distance;
 	private int filterControl;
 	private int p; //proportion constant
-	
+	/**
+	 * Constructs the 
+	 * @param usPoller
+	 * @param leftMotor
+	 * @param rightMotor
+	 * @param bandCenter
+	 * @param bandwidth
+	 */
 	public Avoidance(UltrasonicPoller usPoller, EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor,
 			int bandCenter, int bandwidth){
 		this.usPoller = usPoller;

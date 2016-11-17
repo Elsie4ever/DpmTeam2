@@ -106,7 +106,7 @@ public class StartTrotty {
 			odo.start();
 			usPoller.start();
 			lsPoller.start();
-			LCDInfo lcd = new LCDInfo(odo);
+			LCDInfo lcd = new LCDInfo(odo, usPoller, lsPoller);
 			
 			(new Thread() {
 				public void run() {
@@ -124,7 +124,7 @@ public class StartTrotty {
 			odo.start();
 			usPoller.start();
 			lsPoller.start();
-			LCDInfo lcd = new LCDInfo(odo);
+			LCDInfo lcd = new LCDInfo(odo, usPoller, lsPoller);
 			
 			Avoidance avoidance = new Avoidance(usPoller, leftMotor, rightMotor, bandCenter, bandWidth);
 			avoidance.setAvoid(true);

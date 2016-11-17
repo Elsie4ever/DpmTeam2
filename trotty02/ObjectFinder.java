@@ -1,7 +1,11 @@
 package trotty02;
 
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
-
+/**
+ * 
+ * @author Jean-Christophe
+ *
+ */
 public class ObjectFinder {
 	
 	double[][] waypoints = new double[][]{
@@ -28,7 +32,17 @@ public class ObjectFinder {
 	private double radius;
 	private double width;
 	
-	
+	/**
+	 * Searching the board for an object
+	 * @param leftMotor	the robot's left wheel motor
+	 * @param rightMotor the robot's right wheel motor
+	 * @param navigator navigator object
+	 * @param odometer odometer object
+	 * @param USpoller ultrasonic sensor poller object
+	 * @param usLocalizer ultrasonic sensor localizer
+	 * @param radius radius of the wheels
+	 * @param width track length, distance between the two wheels
+	 */
 	public ObjectFinder(EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor, Navigation navigator,
 			Odometer odometer,
 			UltrasonicPoller USpoller, USLocalizer usLocalizer, double radius, double width) {
@@ -46,7 +60,9 @@ public class ObjectFinder {
 		this.radius = radius;
 		this.width = width;
 	}
-	
+	/**
+	 * Drives the robot in a square
+	 */
 	public void squareDriver (){
 		navigator.travelTo(0.0, 60.0);
 		navigator.travelTo(60, 60);

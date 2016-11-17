@@ -6,7 +6,6 @@
 * Modified by F.P. Ferrie
 * February 28, 2014
 * Changed parameters for W2014 competition
-
 */
 package trotty02;
 
