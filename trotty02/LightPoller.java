@@ -53,11 +53,19 @@ public class LightPoller extends Thread{
 			
 
 				try { Thread.sleep(70);  } catch(Exception e){}		// Poor man's timed sampling
-			}
-			
-			
+			}		
 	}
 	public boolean seesBlock(){ //is there a styro block
 		return seesBlock;
+	}
+	
+	public double [] getRGB(){
+		double [] RGB = new double[3];
+		
+		RGB[0] = sample[0]*100;
+		RGB[1] = sample[1]*100;
+		RGB[2] = sample[2]*100;
+		
+		return RGB;
 	}
 }
