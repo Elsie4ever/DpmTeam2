@@ -9,7 +9,12 @@ import lejos.hardware.port.Port;
 import lejos.hardware.sensor.*;
 import lejos.robotics.SampleProvider;
 import trotty02.UltrasonicPoller;
-
+/**
+ * 
+ * @author Team 02
+ * 
+ *
+ */
 public class StartTrotty {
 
 	// Static Resources:
@@ -33,7 +38,10 @@ public class StartTrotty {
 	private static final int bandWidth = 12;			// Width of dead band (cm)
 	
 
-
+	/**
+	 * The main that controls the actions of the robot
+	 * @param args command arguments
+	 */
 	public static void main(String[] args) {
 		int buttonChoice;
 		//final Odometer odo = new Odometer(leftMotor, rightMotor, 30, true, usPoller);
