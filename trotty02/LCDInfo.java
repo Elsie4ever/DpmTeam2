@@ -76,4 +76,9 @@ public class LCDInfo implements TimerListener{
 		
 		
 	}
+	public void displayString(String showString) { 
+		LCD.clear();
+		LCD.drawString(showString, 0, 1);
+	}
+	
 }

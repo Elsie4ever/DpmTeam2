@@ -68,4 +68,11 @@ public class LightPoller extends Thread{
 		
 		return RGB;
 	}
+	public boolean isFoamBlock(){
+		double[] RGB = getRGB();
+		if(RGB[0] < RGB[1] && RGB[2] < RGB[1]){
+			return true;
+		}
+		return false;
+	}
 }
