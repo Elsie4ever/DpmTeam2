@@ -2,85 +2,111 @@ package trotty02;
 
 import lejos.hardware.Sound;
 import lejos.robotics.SampleProvider;
+import lejos.utility.Delay;
 import trotty02.USLocalizer.LocalizationType;
 import trotty02.UltrasonicPoller;
-/**
- * 
- * @author Team 02
- *
- */
+
 public class USLocalizer {
 	public enum LocalizationType { FALLING_EDGE, RISING_EDGE };
-	public static double ROTATION_SPEED = 30;
+	public static int ROTATION_SPEED = 100;
 
 	private Odometer odo;
 	private SampleProvider usSensor;
 	private float[] usData;
+	private int delay = 40;
+	private int errorFilter,errorFilterMax,distanceMax,wallDistance;
 	private LocalizationType locType;
-	private UltrasonicPoller usPoller;
+	private UltrasonicPoller usPoller = new UltrasonicPoller(usSensor, usData);
 	private Navigation navigator = null;
-	/**
-	 * constructor for USLocalizer class
-	 * @param odo odometer object that prints location on the board
-	 * @param usPoller ultrasonic poller that reads information from the ultrasonic sensor
-	 * @param locType type of localization either rising edge or falling edge
-	 * @param navigator navigator object that allows the robot to move around
-	 */
+
+	public USLocalizer(Odometer odo,  SampleProvider usSensor, float[] usData, LocalizationType locType, Navigation navigator, int cornerNum) {
+		this.odo = odo;
+		this.usSensor = usSensor;
+		this.usData = usData;
+		this.locType = locType;
+		this.navigator = navigator;
+		errorFilter = 0;
+		errorFilterMax = 70;
+		distanceMax = 70;
+		wallDistance = 30;
+	}
 	public USLocalizer(Odometer odo,UltrasonicPoller usPoller, LocalizationType locType, Navigation navigator) {
 		this.odo = odo;
 		this.usPoller = usPoller;
 		this.locType = locType;
 		this.navigator = navigator;
+		errorFilter = 0;
+		errorFilterMax = 70;
+		distanceMax = 70;
+		wallDistance = 30;
 	}
-	/**
-	 * details the strategy of falling edge and rising edge localization techniques
-	 */
+
 	public void doLocalization() {
 		double [] pos = new double [3];
 		double angleA, angleB;
-		double finalAngle;
-		
+
+
+
 		if (locType == LocalizationType.FALLING_EDGE) {
 
-			while(usPoller.seesSomething() || usPoller.getDistFront() == 0){ //while it sees a wall, keep rotating
-				navigator.oldTurnTo(odo.getAng() + 15, true);
-			}
+			// rotate the robot until it sees no wall
+						double currentDistance = usPoller.getDistance();
 
-			while(!usPoller.seesSomething()){ //while it sees nothing, keep rotating
-				// rotate the robot by +1 degree until it sees a wall
-				navigator.oldTurnTo(odo.getAng() - 15, false);
-			}
+						//double currentDistance = this.getFilteredData();
+						while (currentDistance <= wallDistance) {					//if the distance is less than wallDistance
+																					//then keep rotating until it sees no wall
+							navigator.setSpeeds(ROTATION_SPEED, -ROTATION_SPEED);	
+							Delay.msDelay(delay);										
+							currentDistance = usPoller.getDistance();
+						}
 
-			//then latch the angle
-			angleA = odo.getAng();
+						// keep rotating until the robot sees a wall, then latch the angle
 
+						while (currentDistance > wallDistance) {					//if the distance is bigger than wallDistance
+																					//then keep rotating in the same direction
+																					//until it sees a wall
+							navigator.setSpeeds(ROTATION_SPEED, -ROTATION_SPEED);			
+							Delay.msDelay(delay);										
+							currentDistance = usPoller.getDistance();
+						}
+						angleA = odo.getAng();	//record angleA
+			            Sound.beep();
+						// switch direction and wait until it sees no wall
+			            
+						while (currentDistance <= wallDistance) {					//if the distance is less than wallDistance
+																					//then keep rotating in the opposite direction
+																					//until it sees no wall
+							navigator.setSpeeds(-ROTATION_SPEED, ROTATION_SPEED);			
+							Delay.msDelay(delay);
+							Delay.msDelay(3000);
+							currentDistance = usPoller.getDistance();
+						}
 
+						// keep rotating until the robot sees a wall, then latch the angle
+						while (currentDistance > wallDistance) {					//if the distance is bigger than wallDistance
+																					//then  rotating in the same direction
+																					//until it sees another wall
+							navigator.setSpeeds(-ROTATION_SPEED, ROTATION_SPEED);			
+							Delay.msDelay(delay);										
+							currentDistance = usPoller.getDistance();
+						}
+					
+						angleB = odo.getAng();										//record angleB
+						Sound.beep();
+						// angleA is clockwise from angleB, so assume the average of the
+						// angles to the right of angleB is 45 degrees past 'north'
 
-			// switch direction and wait until it sees no wall
-			while(usPoller.seesSomething()){ //while it sees something, keep rotating
-				// rotate the robot by -1 degree
-				navigator.oldTurnTo(odo.getAng() + 15, false);
-			}
+						odo.getLeftMotor().stop(true);				//stop the robot from turning to get more accurate reading
+						odo.getRightMotor().stop(false);
 
-
-			// keep rotating until the robot sees a wall
-			while(!usPoller.seesSomething()){ 
-				navigator.oldTurnTo(odo.getAng() + 15, true);
-
-			}
-			angleB = odo.getAng();
-			// angleA is clockwise from angleB, so assume the average of the
-			// angles to the right of angleB is 45 degrees past 'north'
-
-			//if angleA is lower than 0, it jumps up to 360, this fixes the math
-			if(angleA > 180){
-				angleA-=360;
-			}			
-
-			// update the odometer position (example to follow:)
-
-			odo.setPosition(new double [] {0.0, 0.0, (45 - ((angleA - angleB)/2))}, new boolean [] {true, true, true});
-			navigator.oldTurnTo(0, true); //adjust heading so it faces pos x axis
+						double deltaDegree; 
+						deltaDegree = (360+angleB+45-(((360+angleB-angleA)%360)/2))%360-90;	//calculate the new degree which it
+																							//should turn to based on angle A and B
+						navigator.turnTo(deltaDegree, true);										//turn to that degree
+						odo.setPosition(new double[] { 0.0, 0.0, 90.0 }, new boolean[] { true, true, true }); //reset position
+						// update the odometer position (example to follow:)
+						
+						Delay.msDelay(4000);
 
 		} else {
 			/*
@@ -89,57 +115,88 @@ public class USLocalizer {
 			 * This is very similar to the FALLING_EDGE routine, but the robot
 			 * will face toward the wall for most of it.
 			 */
-			while(usPoller.seesSomething() || usPoller.getDistFront() == 0){ //while it sees a wall, keep rotating
-				navigator.oldTurnTo(odo.getAng() + 10, true);
+			while (!usPoller.seesSomething()) {		//if the distance is bigger than wallDistance
+															//then keep rotating until it sees a wall
+				navigator.setSpeeds(ROTATION_SPEED, -ROTATION_SPEED);			
+				Delay.msDelay(delay);										
+				
+
 			}
 
-			while(!usPoller.seesSomething()){ //while it sees nothing, keep rotating
-				navigator.oldTurnTo(odo.getAng() - 10, false);
+			// keep rotating until the robot sees no wall, then latch the angle
+
+			while (usPoller.seesSomething()) {		//if the distance is less than wallDistance
+															//then keep rotating in the same direction
+															//until it sees no wall
+				navigator.setSpeeds(ROTATION_SPEED, -ROTATION_SPEED);			
+				Delay.msDelay(delay);										
+				
+
 			}
-			angleA = odo.getAng();
-			Sound.beep();
+			angleA = odo.getAng();							//record angleA
+
+			// switch direction and wait until it sees a wall
+
+			while (!usPoller.seesSomething()) {		//if the distance is bigger than wallDistance
+															//then keep rotating in the opposite direction
+															//until it sees a wall
+				navigator.setSpeeds(-ROTATION_SPEED, ROTATION_SPEED);			
+				Delay.msDelay(delay);										
 			
 
-			while(usPoller.seesSomething()){ //while it sees a wall, keep rotating
-				navigator.oldTurnTo(odo.getAng() - 10, true);
 			}
-			angleB = odo.getAng();
-			Sound.beep();
-			try { Thread.sleep(20);  } catch(Exception e){}	
+
+			// keep rotating until the robot sees no wall, then latch the angle
+			while (usPoller.seesSomething()) {		//if the distance is less than wallDistance
+															//then  rotating in the same direction
+															//until it sees no wall
+				navigator.setSpeeds(-ROTATION_SPEED, ROTATION_SPEED);			
+				Delay.msDelay(delay);										
 			
 
-
-
-
-			if(angleA > 180){
-				angleA-=360;
 			}
+			angleB = odo.getAng();							//record angleB
+
+			// angleB is clockwise from angleA, so assume the average of the
+			// angles to the right of angleA is 45 degrees past 'north'
+
+			odo.getLeftMotor().stop(true);
+			odo.getRightMotor().stop(false);				//stop the robot to get more accurate reading
+
+			double deltaDegree;
 			
 
-			odo.setPosition(new double [] {0.0, 0.0, ((0 - (angleA - angleB)/2))}, new boolean [] {true, true, true});
+			deltaDegree = (360+angleA+45-(((360+angleA-angleB)%360)/2))%360;		//calculate the new degree which it
+																					//should turn to based on angle A and B
+			navigator.turnTo(deltaDegree, true);											//turn to that degree
+
+			// update the odometer position (example to follow:)
+			
+			Delay.msDelay(4000);  				//delay 4 seconds to stable the robot before reset position
+			
+			odo.setPosition(new double[] { 0.0, 0.0, 90.0 }, new boolean[] { true, true, true }); 
 				
 		}
-		
-	navigator.oldTurnTo(180, true);
-	odo.setPosition(new double[] {usPoller.getDistFront()+7, 0, 0}, new boolean[]{true, false, false}); 
+	
+	navigator.turnTo(135, true);
+	odo.setPosition(new double[] { 0.0, 0.0, 45.0 }, new boolean[] { true, true, true }); 
+	
+	/*odo.setPosition(new double[] {usPoller.distance+7, 0, 0}, new boolean[]{true, false, false}); 
 		//the 7 compensates for hardware inaccuracies
-	navigator.oldTurnTo(270, true);
-	odo.setPosition(new double[] {0, usPoller.getDistFront()+7, 0}, new boolean[]{false, true, false}); 
-
-	navigator.turnTo(230, true); //real value is 225
+	navigator.turnTo(270, true);
+	odo.setPosition(new double[] {0, usPoller.distance+7, 0}, new boolean[]{false, true, false}); 
+	
+	navigator.turnTo(0, true);
     
-	odo.setPosition(new double [] {0.0, 0.0, 0.0}, new boolean [] {true, true, true});
+	odo.setPosition(new double [] {0.0, 0.0, 45.0}, new boolean [] {true, true, true});*/
 	
 	//navigator.travelTo(30, 30);
 	//navigator.turnTo(0, true);
 	
 	}
-	/**
-	 * Returns a float value that represents the distance read by the ultrasonic sensor
-	 * @return the distance read by the ultrasonic sensor 
-	 */
+
 	private float getFilteredData() {
-		usSensor.fetchSample(usData, 0);
+		//usSensor.fetchSample(usData, 0);
 		float distance = usData[0];
 
 		return distance;
