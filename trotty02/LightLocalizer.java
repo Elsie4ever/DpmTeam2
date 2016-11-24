@@ -10,6 +10,7 @@ public class LightLocalizer {
 	private double d=11;	//8.5//by measurement, the distance between ls and the center of track
 	private double x,y,theta; //values to compute
 	private EV3LargeRegulatedMotor leftMotor, rightMotor;
+	private Navigation navigator = null;
 	
 	public static final double WHEEL_RADIUS = 2.1;		//its actually between 2.15 and 2.10 but by trials it seems like 2.1 works perfectly 
 	public static final double TRACK = 15.7;			//by measurement, the distance between two wheels
@@ -34,27 +35,28 @@ public class LightLocalizer {
 		Navigation navi=new Navigation(this.odo);//thus i can use method in navigation.java class
 		
 		
-		odo.setPosition(new double [] {0.0, 0.0, 45}, new boolean [] {false, false, true});
+		odo.setPosition(new double [] {0.0, 0.0, 135}, new boolean [] {false, false, true});
 		//set current position as 0,0 and 45 degree
 		leftMotor.setSpeed((int)forwardspeed);
 		rightMotor.setSpeed((int)forwardspeed);
-		leftMotor.rotate(convertDistance(WHEEL_RADIUS,16),true);//8.5
-		rightMotor.rotate(convertDistance(WHEEL_RADIUS,16),false);//8.5
+		leftMotor.rotate(convertDistance(WHEEL_RADIUS,17),true);//8.5
+		rightMotor.rotate(convertDistance(WHEEL_RADIUS,17),false);//8.5
 		//by trial, this distance is enough for the robot to do ls localization
 		leftMotor.stop();
 		rightMotor.stop();
+		
 		//stop both motos
 		// above code drives the robot to location listed in tutorial
 		
 		
-		double angle[]=new double[4];	//declare an array to store the angles 
+		/*double angle[]=new double[4];	//declare an array to store the angles 
 		int countgridlines=0;	//counter
 		while (countgridlines<=3) //this loop detects 4 gridlines 
 		{	
 			colorSensor.fetchSample(colorData,0);      		//get light sensor Red value 
 			int LSvalue=  (int)((colorData[0])*100);			// times 100 into 0~100 scale,easier to test 
 			pos=odo.getPosition();	//get current posistion from odometer
-			if (LSvalue<=8)	//the floor is something above 70, 
+			if (LSvalue<=9.5)	//the floor is something above 70, 
 				//when it first sees a black line, is 60~50, so i set 50 to make the robot stops quicker
 				//note that when the ls is exactly above the black line, the lsvalue is less then 15
 			{
@@ -109,7 +111,7 @@ public class LightLocalizer {
 		navi.turnTo(45, true);
 		leftMotor.stop();
 		rightMotor.stop();
-		odo.setPosition(new double [] {x, y, 0}, new boolean [] {false,false,true});
+		odo.setPosition(new double [] {x, y, 0}, new boolean [] {false,false,true});*/
 		// when done travel to (0,0) and turn to 0 degrees
 	}
 	private static int convertAngle(double radius, double width, double angle) {

@@ -1,6 +1,7 @@
 package trotty02;
 
 import lejos.hardware.Sound;
+import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.robotics.SampleProvider;
 import lejos.utility.Delay;
 import trotty02.USLocalizer.LocalizationType;
@@ -14,10 +15,12 @@ public class USLocalizer {
 	private SampleProvider usSensor;
 	private float[] usData;
 	private int delay = 40;
+	private double wheelRadius=2.1;
 	private int errorFilter,errorFilterMax,distanceMax,wallDistance;
 	private LocalizationType locType;
 	private UltrasonicPoller usPoller = new UltrasonicPoller(usSensor, usData);
 	private Navigation navigator = null;
+	private EV3LargeRegulatedMotor leftMotor, rightMotor;
 
 	public USLocalizer(Odometer odo,  SampleProvider usSensor, float[] usData, LocalizationType locType, Navigation navigator, int cornerNum) {
 		this.odo = odo;
@@ -69,7 +72,7 @@ public class USLocalizer {
 							Delay.msDelay(delay);										
 							currentDistance = usPoller.getDistance();
 						}
-						angleA = odo.getAng();	//record angleA
+						angleA = odo.getAng()+15;	//record angleA
 			            Sound.beep();
 						// switch direction and wait until it sees no wall
 			            
@@ -100,14 +103,14 @@ public class USLocalizer {
 						odo.getRightMotor().stop(false);
 
 						double deltaDegree; 
-						deltaDegree = (360+angleB+45-(((360+angleB-angleA)%360)/2))%360-90;	//calculate the new degree which it
+						deltaDegree = (360+angleB+45-(((360+angleB-angleA)%360)/2))%360-45;	//calculate the new degree which it
 																							//should turn to based on angle A and B
 						navigator.turnTo(deltaDegree, true);										//turn to that degree
-						odo.setPosition(new double[] { 0.0, 0.0, 90.0 }, new boolean[] { true, true, true }); //reset position
+						odo.setPosition(new double[] { 0.0, 0.0, 135.0 }, new boolean[] { true, true, true }); //reset position
 						// update the odometer position (example to follow:)
-						
 						Delay.msDelay(1000);
-
+					
+					
 		} else {
 			/*
 			 * The robot should turn until it sees the wall, then look for the
