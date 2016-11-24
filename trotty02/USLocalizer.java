@@ -106,7 +106,7 @@ public class USLocalizer {
 						odo.setPosition(new double[] { 0.0, 0.0, 90.0 }, new boolean[] { true, true, true }); //reset position
 						// update the odometer position (example to follow:)
 						
-						Delay.msDelay(4000);
+						Delay.msDelay(1000);
 
 		} else {
 			/*
