@@ -34,8 +34,10 @@ public class StartTrotty {
 	final static double sensorToAxis = 10.5;
 	static boolean captured = false;
 	
+	
 	private static final int bandCenter = 20;			// Offset from the wall (cm)
-	private static final int bandWidth = 12;			// Width of dead band (cm)
+	private static final int bandWidth = 12;
+	private static final int resolution = 3;// Width of dead band (cm)
 	
 
 	/**
@@ -44,6 +46,10 @@ public class StartTrotty {
 	 */
 	public static void main(String[] args) {
 		int buttonChoice;
+		WifiTest wifi = new WifiTest();
+		wifi.run();
+		wifi.getRole();
+		wifi.getCorner();
 		//final Odometer odo = new Odometer(leftMotor, rightMotor, 30, true, usPoller);
 
 
@@ -92,14 +98,15 @@ public class StartTrotty {
 		final Odometer odo = new Odometer(leftMotor, rightMotor, 30, true, usPoller, lsPoller);
 		final Navigation navigator = new Navigation(odo);
 
+		
 		do {
 			// clear the display
 			t.clear();
 
 			// tell the user to press right when ready to start
-			t.drawString("< Left | Right >", 0, 0);
-			t.drawString(" Rising|  Avoid ", 0, 1);
-			t.drawString("Locali.|  Test  ", 0, 2);
+			t.drawString("< Left : LocalUS + localLight >", 0, 0);
+			t.drawString(" UP: LocalUS + ObjectFinder ", 0, 1);
+			t.drawString(" Down : ObjectFinder  ", 0, 2);
 			t.drawString("       |        ", 0, 4);
 			t.drawString("       |        ", 0, 5);
 			t.drawString("       |        ", 0, 6);
@@ -107,15 +114,13 @@ public class StartTrotty {
 
 			buttonChoice = Button.waitForAnyPress();
 		} while (buttonChoice != Button.ID_LEFT
-				&& buttonChoice != Button.ID_RIGHT
-				&& buttonChoice != Button.ID_UP);
+				&& buttonChoice != Button.ID_ENTER);
 
 		if (buttonChoice == Button.ID_LEFT) {
 			odo.start();
 			usPoller.start();
 			lsPoller.start();
 			LCDInfo lcd = new LCDInfo(odo, usPoller, lsPoller);
-			
 			(new Thread() {
 				public void run() {
 					USLocalizer usl = new USLocalizer(odo, usPoller, USLocalizer.LocalizationType.RISING_EDGE, navigator);
@@ -123,24 +128,35 @@ public class StartTrotty {
 					
 					Button.waitForAnyPress();
 					// perform the light sensor localization
-					LightLocalizer lsl = new LightLocalizer(odo,colorSensor,sample);
+				
+					LightLocalizer lsl = new LightLocalizer(odo,colorSensor,sample, navigator);
 					lsl.doLocalization();
 				}	
 			}).start();
-
-		} else if (buttonChoice == Button.ID_RIGHT) {
+		} else if (buttonChoice == Button.ID_ENTER) {
 			odo.start();
 			usPoller.start();
 			lsPoller.start();
-			LCDInfo lcd = new LCDInfo(odo, usPoller, lsPoller);
+
 			
-			Avoidance avoidance = new Avoidance(usPoller, leftMotor, rightMotor, bandCenter, bandWidth);
-			avoidance.setAvoid(true);
+			USLocalizer usl = new USLocalizer(odo, usPoller, USLocalizer.LocalizationType.RISING_EDGE, navigator);
+			LightLocalizer lsl = new LightLocalizer(odo,colorSensor,sample, navigator);
+
+			usl.doLocalization();
 			
-			avoidance.start();
+			Button.waitForAnyPress();
+			lightMotor.rotate(85);
+			ObjectFinder of = new ObjectFinder(leftMotor, rightMotor, navigator, lsl, odo,
+					usPoller, usl, lsPoller, resolution);
+			of.pointDriver();
+		} else if (buttonChoice == Button.ID_DOWN) {
+			LightLocalizer lsl = new LightLocalizer(odo,colorSensor,sample, navigator);
+			USLocalizer usl = new USLocalizer(odo, usPoller, USLocalizer.LocalizationType.RISING_EDGE, navigator);
+			lightMotor.rotate(85);
+			ObjectFinder of = new ObjectFinder(leftMotor, rightMotor, navigator, lsl, odo,
+					usPoller, usl, lsPoller, resolution);
+			of.pointDriver();
 		}
-		
-		while (Button.waitForAnyPress() != Button.ID_ESCAPE);
 		System.exit(0);	
 }
 

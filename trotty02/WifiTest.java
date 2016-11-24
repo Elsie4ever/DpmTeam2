@@ -1,23 +1,23 @@
 package trotty02;
 /*
-* @author Sean Lawlor
-* @date November 3, 2011
-* @class ECSE 211 - Design Principle and Methods
-* 
-* Modified by F.P. Ferrie
-* February 28, 2014
-* Changed parameters for W2014 competition
-* 
-* Modified by Francois OD
-* November 11, 2015
-* Ported to EV3 and wifi (from NXT and bluetooth)
-* Changed parameters for F2015 competition
-* 
-* Modified by Michael Smith
-* November 1, 2016
-* Cleaned up print statements, old code, formatting
-* 
-*/
+ * @author Sean Lawlor
+ * @date November 3, 2011
+ * @class ECSE 211 - Design Principle and Methods
+ * 
+ * Modified by F.P. Ferrie
+ * February 28, 2014
+ * Changed parameters for W2014 competition
+ * 
+ * Modified by Francois OD
+ * November 11, 2015
+ * Ported to EV3 and wifi (from NXT and bluetooth)
+ * Changed parameters for F2015 competition
+ * 
+ * Modified by Michael Smith
+ * November 1, 2016
+ * Cleaned up print statements, old code, formatting
+ * 
+ */
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -41,13 +41,17 @@ public class WifiTest {
 	 * 2. TEAM_NUMBER: your project team number
 	 * */
 
-	private static final String SERVER_IP = "192.168.2.6";
-	private static final int TEAM_NUMBER = 1;
-
+	private static final String SERVER_IP = "192.168.2.8";
+	private static final int TEAM_NUMBER = 2;
+	public static HashMap<String, Integer> t;
+	public static int role;
+	
 	private static TextLCD LCD = LocalEV3.get().getTextLCD();
 
-	public static void main(String[] args) {
-
+	public WifiTest() {
+	}
+	
+	public void run(){
 		LCD.clear();
 
 		/*
@@ -68,7 +72,7 @@ public class WifiTest {
 		} catch (IOException e) {
 			System.out.println("Connection failed");
 		}
-		
+
 		LCD.clear();
 
 		/*
@@ -87,4 +91,54 @@ public class WifiTest {
 		// Wait until user decides to end program
 		Button.waitForAnyPress();
 	}
+	
+	public void getRole(){
+		if((t.get("BTN")) == 2)
+			role = 1; //builder
+		if((t.get("CTN")) == 2)
+			role = 2; //collector
+	}
+
+	public int getCorner(){
+		if(role == 1)
+			return (int)(t.get("BSC"));
+		if(role == 2)
+			return (int)(t.get("CSC"));
+
+		return 1;
+	}
+
+	public int getLRZy(){
+		return (int)(t.get("LRZy"));
+	}
+	
+	public int getUGZy(){
+		return (int)(t.get("UGZy"));
+	}
+	
+	public int getLRZx(){
+		return (int)(t.get("LRZx"));
+	}
+	
+	public int getUGZx(){
+		return (int)(t.get("UGZx"));
+	}
+	
+	public int getLGZy(){
+		return (int)(t.get("LGZy"));
+	}
+	
+	public int getLGZx(){
+		return (int)(t.get("LGZx"));
+	}
+	
+	public int getURZy(){
+		return (int)(t.get("URZy"));
+	}
+	
+	public int getURZx(){
+		return (int)(t.get("URZx"));
+	}
+
+	
 }

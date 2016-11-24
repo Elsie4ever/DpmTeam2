@@ -73,5 +73,10 @@ public class WifiConnection {
 		socketClient.close();
 
 	}
+	
+	HashMap<String, Integer> getStartData(){
+		System.out.println(this.StartData);
+		return this.StartData;
+	}
 
 }

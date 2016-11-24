@@ -133,6 +133,16 @@ public class UltrasonicPoller extends Thread{
 		return clone[clone.length/2];
 	}
 	
+	public static double getDistFrontJC(){
+		double [] clone;
+		
+		synchronized(lock){
+			clone = clone(windowFront);
+		}
+		Arrays.sort(clone);
+		return clone[0];
+	}
+	
 	public static double getDistSide(){
 		/**
 		 * Get the median value in the window from the side usSensor
@@ -145,6 +155,19 @@ public class UltrasonicPoller extends Thread{
 		}
 			Arrays.sort(clone);
 			return clone[clone.length/2];
+	}
+	
+	public static double getDistSideAvoidance(){
+		/**
+		 * Get the median value in the window from the side usSensor
+		 * @return	{double}, the distance value
+		 */
+		double [] clone;
+		
+		synchronized(lock){
+			clone = clone(windowSide);
+		}
+			return clone[4];
 	}
 	
 	/**

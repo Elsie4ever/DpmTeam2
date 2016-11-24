@@ -10,6 +10,7 @@ public class LightLocalizer {
 	private double d=6.75;	//8.5//by measurement, the distance between ls and the center of track
 	private double x,y,theta; //values to compute
 	private EV3LargeRegulatedMotor leftMotor, rightMotor;
+	private Navigation navi;
 	
 	public static final double WHEEL_RADIUS = 2.1;		//its actually between 2.15 and 2.10 but by trials it seems like 2.1 works perfectly 
 	public static final double TRACK = 15.7;			//by measurement, the distance between two wheels
@@ -22,18 +23,18 @@ public class LightLocalizer {
 
 	private final static double LIGHT_SENSOR_OFFSET = 30;
 	
-	public LightLocalizer(Odometer odo, SampleProvider colorSensor, float[] colorData) 
+	public LightLocalizer(Odometer odo, SampleProvider colorSensor, float[] colorData, Navigation navi) 
 	{
 		this.odo = odo;
 		this.colorSensor = colorSensor;
 		this.colorData = colorData;
 		this.leftMotor = this.odo.getLeftMotor();
 		this.rightMotor = this.odo.getRightMotor();
+		this.navi = navi;
 	}
 	
 	public void doLocalization() {
 		double [] pos = new double [3];//declare an array to store the odometer value
-		Navigation navi=new Navigation(this.odo);//thus i can use method in navigation.java class
 		
 		
 		odo.setPosition(new double [] {0.0, 0.0, 45}, new boolean [] {false, false, true});

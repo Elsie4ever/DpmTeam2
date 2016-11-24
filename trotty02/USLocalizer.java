@@ -1,5 +1,6 @@
 package trotty02;
 
+import lejos.hardware.Sound;
 import lejos.robotics.SampleProvider;
 import trotty02.USLocalizer.LocalizationType;
 import trotty02.UltrasonicPoller;
@@ -37,16 +38,17 @@ public class USLocalizer {
 	public void doLocalization() {
 		double [] pos = new double [3];
 		double angleA, angleB;
+		double finalAngle;
 		
 		if (locType == LocalizationType.FALLING_EDGE) {
 
 			while(usPoller.seesSomething() || usPoller.getDistFront() == 0){ //while it sees a wall, keep rotating
-				navigator.turnTo(odo.getAng() + 15, true);
+				navigator.oldTurnTo(odo.getAng() + 15, true);
 			}
 
 			while(!usPoller.seesSomething()){ //while it sees nothing, keep rotating
 				// rotate the robot by +1 degree until it sees a wall
-				navigator.turnTo(odo.getAng() - 15, false);
+				navigator.oldTurnTo(odo.getAng() - 15, false);
 			}
 
 			//then latch the angle
@@ -57,13 +59,13 @@ public class USLocalizer {
 			// switch direction and wait until it sees no wall
 			while(usPoller.seesSomething()){ //while it sees something, keep rotating
 				// rotate the robot by -1 degree
-				navigator.turnTo(odo.getAng() + 15, false);
+				navigator.oldTurnTo(odo.getAng() + 15, false);
 			}
 
 
 			// keep rotating until the robot sees a wall
 			while(!usPoller.seesSomething()){ 
-				navigator.turnTo(odo.getAng() + 15, true);
+				navigator.oldTurnTo(odo.getAng() + 15, true);
 
 			}
 			angleB = odo.getAng();
@@ -78,7 +80,7 @@ public class USLocalizer {
 			// update the odometer position (example to follow:)
 
 			odo.setPosition(new double [] {0.0, 0.0, (45 - ((angleA - angleB)/2))}, new boolean [] {true, true, true});
-			navigator.turnTo(0, true); //adjust heading so it faces pos x axis
+			navigator.oldTurnTo(0, true); //adjust heading so it faces pos x axis
 
 		} else {
 			/*
@@ -88,19 +90,24 @@ public class USLocalizer {
 			 * will face toward the wall for most of it.
 			 */
 			while(usPoller.seesSomething() || usPoller.getDistFront() == 0){ //while it sees a wall, keep rotating
-				navigator.turnTo(odo.getAng() + 10, true);
+				navigator.oldTurnTo(odo.getAng() + 10, true);
 			}
 
 			while(!usPoller.seesSomething()){ //while it sees nothing, keep rotating
-				navigator.turnTo(odo.getAng() - 10, false);
+				navigator.oldTurnTo(odo.getAng() - 10, false);
 			}
 			angleA = odo.getAng();
+			Sound.beep();
+			
 
 			while(usPoller.seesSomething()){ //while it sees a wall, keep rotating
-				navigator.turnTo(odo.getAng() - 10, true);
+				navigator.oldTurnTo(odo.getAng() - 10, true);
 			}
-
 			angleB = odo.getAng();
+			Sound.beep();
+			try { Thread.sleep(20);  } catch(Exception e){}	
+			
+
 
 
 
@@ -113,15 +120,15 @@ public class USLocalizer {
 				
 		}
 		
-	navigator.turnTo(180, true);
+	navigator.oldTurnTo(180, true);
 	odo.setPosition(new double[] {usPoller.getDistFront()+7, 0, 0}, new boolean[]{true, false, false}); 
 		//the 7 compensates for hardware inaccuracies
-	navigator.turnTo(270, true);
+	navigator.oldTurnTo(270, true);
 	odo.setPosition(new double[] {0, usPoller.getDistFront()+7, 0}, new boolean[]{false, true, false}); 
-	
-	navigator.turnTo(0, true);
+
+	navigator.turnTo(230, true); //real value is 225
     
-	odo.setPosition(new double [] {0.0, 0.0, 45.0}, new boolean [] {true, true, true});
+	odo.setPosition(new double [] {0.0, 0.0, 0.0}, new boolean [] {true, true, true});
 	
 	//navigator.travelTo(30, 30);
 	//navigator.turnTo(0, true);
