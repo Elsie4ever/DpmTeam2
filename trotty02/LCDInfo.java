@@ -19,7 +19,8 @@ public class LCDInfo implements TimerListener{
 	// arrays for displaying data
 	private double [] pos;
 	private String detection;
-	private UltrasonicPoller usPoller;
+	private UltrasonicPoller usPollerF;
+	private UltrasonicPoller usPollerS;
 	private LightPoller lightPoller;
 	/**
 	 * Constructor for the LDCInfo class, also starting the LCD timer.
@@ -27,8 +28,10 @@ public class LCDInfo implements TimerListener{
 	 * @param usPoller ultrasonic poller object
 	 * @param lightPoller light poller object
 	 */
-	public LCDInfo(Odometer odo, UltrasonicPoller usPoller, LightPoller lightPoller) {
-		this.usPoller = usPoller;
+	public LCDInfo(Odometer odo, UltrasonicPoller usPollerF, UltrasonicPoller usPollerS, LightPoller lightPoller) {
+		this.usPollerF = usPollerF;
+		this.usPollerS = usPollerS;
+
 		this.lightPoller = lightPoller;
 		this.odo = odo;
 		this.lcdTimer = new Timer(LCD_REFRESH, this);
@@ -54,8 +57,8 @@ public class LCDInfo implements TimerListener{
 		
 		LCD.drawString("DistFront: ", 0, 3);
 		LCD.drawString("DistSide: ", 0, 4);
-		LCD.drawInt((int) usPoller.getDistFront(), 11, 3);
-		LCD.drawInt((int) usPoller.getDistSide(), 10, 4);
+		LCD.drawInt((int) usPollerF.getDistance(), 11, 3);
+		LCD.drawInt((int) usPollerS.getDistance(), 10, 4);
 		
 		LCD.drawString("RBG: ", 0, 5);
 		LCD.drawInt((int) Math.floor(this.lightPoller.getRGB()[1]), 5, 5);

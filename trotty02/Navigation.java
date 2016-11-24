@@ -211,8 +211,8 @@ public void goForward(double distance) {
 	rightMotor.rotate(convertDistance(RADIUS, distance), false);
 }
 
-public void avoid(UltrasonicPoller usPoller){
-	double distance = usPoller.getDistFront();
+public void avoid(UltrasonicPoller usPollerF){
+	double distance = usPollerF.getDistance();
 
 	this.travelTo(0,0,false);
 	//backs up for space

@@ -9,8 +9,9 @@ import lejos.hardware.motor.EV3LargeRegulatedMotor;
 public class Avoidance extends Thread{
 	
 	private boolean avoid = false;
-	private UltrasonicPoller usPoller;
-	
+	private UltrasonicPoller usPollerF;
+	private UltrasonicPoller usPollerS;
+
 	private int bandCenter, track;
 	private static final int EMERGENCY = 5;
 	private static final int motorStraight = 150;
@@ -29,9 +30,11 @@ public class Avoidance extends Thread{
 	 * @param bandCenter distance between the robot and the wall
 	 * @param track width of the robot
 	 */
-	public Avoidance(UltrasonicPoller usPoller, EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor,
+	public Avoidance(UltrasonicPoller usPollerF, UltrasonicPoller usPollerS, EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor,
 			int bandCenter, int track){
-		this.usPoller = usPoller;
+		this.usPollerF = usPollerF;
+		this.usPollerS = usPollerS;
+
 		//Default Constructor
 		this.bandCenter = bandCenter;
 		this.track = track;
@@ -42,7 +45,7 @@ public class Avoidance extends Thread{
 	public void run(){
 		while(true){
 			while(avoid){
-				processUSData(usPoller.getDistFront(), usPoller.getDistSide());
+				processUSData(usPollerF.getDistance(), usPollerS.getDistance());
 			}
 		}
 	}

@@ -93,9 +93,10 @@ public class StartTrotty {
 
 		// setup the odometer and display
 		final LightPoller lsPoller = new LightPoller(colorSensor, sample);
-		final UltrasonicPoller usPoller = new UltrasonicPoller(usValueFront, usDataFront,
-				usValueSide, usDataSide, usValueSide, usDataSide);	// the selected controller on each cycle
-		final Odometer odo = new Odometer(leftMotor, rightMotor, 30, true, usPoller, lsPoller);
+		final UltrasonicPoller usPollerF = new UltrasonicPoller(usValueFront, usDataFront);	// the selected controller on each cycle
+		final UltrasonicPoller usPollerS = new UltrasonicPoller(usValueSide, usDataSide);	// the selected controller on each cycle
+
+		final Odometer odo = new Odometer(leftMotor, rightMotor, 30, true, usPollerF, lsPoller);
 		final Navigation navigator = new Navigation(odo);
 
 		
@@ -118,43 +119,46 @@ public class StartTrotty {
 
 		if (buttonChoice == Button.ID_LEFT) {
 			odo.start();
-			usPoller.start();
+			usPollerF.start();
+			usPollerS.start();
 			lsPoller.start();
-			LCDInfo lcd = new LCDInfo(odo, usPoller, lsPoller);
+			LCDInfo lcd = new LCDInfo(odo, usPollerF, usPollerS, lsPoller);
 			(new Thread() {
 				public void run() {
-					USLocalizer usl = new USLocalizer(odo, usPoller, USLocalizer.LocalizationType.RISING_EDGE, navigator);
+					USLocalizer usl = new USLocalizer(odo, usPollerF, USLocalizer.LocalizationType.RISING_EDGE, navigator);
 					usl.doLocalization();
 					
 					Button.waitForAnyPress();
 					// perform the light sensor localization
 				
-					LightLocalizer lsl = new LightLocalizer(odo,colorSensor,sample, navigator);
+					LightLocalizer lsl = new LightLocalizer(odo,colorSensor,sample);
 					lsl.doLocalization();
 				}	
 			}).start();
 		} else if (buttonChoice == Button.ID_ENTER) {
 			odo.start();
-			usPoller.start();
+			usPollerF.start();
+			usPollerS.start();
+
 			lsPoller.start();
 
 			
-			USLocalizer usl = new USLocalizer(odo, usPoller, USLocalizer.LocalizationType.RISING_EDGE, navigator);
-			LightLocalizer lsl = new LightLocalizer(odo,colorSensor,sample, navigator);
+			USLocalizer usl = new USLocalizer(odo, usPollerF, USLocalizer.LocalizationType.RISING_EDGE, navigator);
+			LightLocalizer lsl = new LightLocalizer(odo,colorSensor,sample);
 
 			usl.doLocalization();
 			
 			Button.waitForAnyPress();
 			lightMotor.rotate(85);
 			ObjectFinder of = new ObjectFinder(leftMotor, rightMotor, navigator, lsl, odo,
-					usPoller, usl, lsPoller, resolution);
+					usPollerF, usPollerS, usl, lsPoller, resolution);
 			of.pointDriver();
 		} else if (buttonChoice == Button.ID_DOWN) {
-			LightLocalizer lsl = new LightLocalizer(odo,colorSensor,sample, navigator);
-			USLocalizer usl = new USLocalizer(odo, usPoller, USLocalizer.LocalizationType.RISING_EDGE, navigator);
+			LightLocalizer lsl = new LightLocalizer(odo,colorSensor,sample);
+			USLocalizer usl = new USLocalizer(odo, usPollerF, USLocalizer.LocalizationType.RISING_EDGE, navigator);
 			lightMotor.rotate(85);
 			ObjectFinder of = new ObjectFinder(leftMotor, rightMotor, navigator, lsl, odo,
-					usPoller, usl, lsPoller, resolution);
+					usPollerF, usPollerS, usl, lsPoller, resolution);
 			of.pointDriver();
 		}
 		System.exit(0);	

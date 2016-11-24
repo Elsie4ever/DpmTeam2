@@ -26,7 +26,7 @@ public class ObjectDetector {
 	}
 	public String detectObj(){
 		//if the robot sees something, stay in loop
-		if(usPoller.seesSomething() || usPoller.getDistFront() == 0){
+		if(usPoller.seesSomething() || usPoller.getDistance() == 0){
 			detectionMessage = "Object Detected";
 			return detectionMessage;
 		}

@@ -71,7 +71,8 @@ public class ObjectFinder {
 	private Navigation navigator;
 	//private Capture capture;
 	private LightLocalizer lightLocalizer;
-	private UltrasonicPoller USpoller;
+	private UltrasonicPoller USpollerF;
+	private UltrasonicPoller USpollerS;
 	private USLocalizer usLocalizer;
 	private double radius;
 	private double width;
@@ -92,7 +93,7 @@ public class ObjectFinder {
 	public ObjectFinder(EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor, Navigation navigator, 
 			LightLocalizer lightLocalizer,
 			Odometer odometer,
-			UltrasonicPoller USpoller, USLocalizer usLocalizer, LightPoller lightPoller, int resolution) {
+			UltrasonicPoller USpollerF, UltrasonicPoller USpollerS, USLocalizer usLocalizer, LightPoller lightPoller, int resolution) {
 
 		this.leftMotor = leftMotor;
 		this.rightMotor = rightMotor;
@@ -101,7 +102,8 @@ public class ObjectFinder {
 		//this.capture = capture;
 		this.lightLocalizer = lightLocalizer;
 		this.odometer = odometer;
-		this.USpoller = USpoller;
+		this.USpollerF = USpollerF;
+		this.USpollerS = USpollerS;
 		this.usLocalizer = usLocalizer;
 		this.radius = radius;
 		this.width = width;
@@ -125,8 +127,8 @@ public class ObjectFinder {
 
 					navigator.travelTo(waypoints[i][0], waypoints[i][1], true);
 					try { Thread.sleep(20);  } catch(Exception e){}	
-					double frontDist = USpoller.getDistFront();
-					double sideDist = USpoller.getDistSide();
+					double frontDist = USpollerF.getDistance();
+					double sideDist = USpollerS.getDistance();
 					if (frontDist < seekObjectDistance && waypoints[i][2] == 0) {
 						if (checkObject(frontDist, 0)){
 							goToEnd();
@@ -147,7 +149,7 @@ public class ObjectFinder {
 						}
 					}
 				} else {
-					bangbang(USpoller.getDistSideAvoidance());
+					bangbang(USpollerS.getDistance());
 					j = resolution; //prevents skipping tiles
 					avoidanceCounter++;
 					if (avoidanceCounter >= MAX_AVOIDANCE_COUNTER) {
@@ -216,14 +218,14 @@ public class ObjectFinder {
 		while (true) {
 			navigator.travelTo(endCoords[0],endCoords[1], true);
 			int i;
-			if (USpoller.getDistFront() < 12) {
+			if (USpollerF.getDistance() < 12) {
 				sideAngle = odometer.getTheta() - 90;
 				while (sideAngle < 0) {
 					sideAngle += 360;
 				}
 				navigator.turnTo(sideAngle, true);	
 				for (i = 0; i < MAX_AVOIDANCE_COUNTER; i++) {
-					bangbang(USpoller.getDistFront());
+					bangbang(USpollerF.getDistance());
 				}
 			}
 		}
