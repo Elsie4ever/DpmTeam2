@@ -46,10 +46,11 @@ public class StartTrotty {
 	 */
 	public static void main(String[] args) {
 		int buttonChoice;
-		WifiTest wifi = new WifiTest();
+		/*WifiTest wifi = new WifiTest();
 		wifi.run();
 		wifi.getRole();
 		wifi.getCorner();
+		*/
 		//final Odometer odo = new Odometer(leftMotor, rightMotor, 30, true, usPoller);
 
 

@@ -79,6 +79,11 @@ public class LCDInfo implements TimerListener{
 		
 		
 	}
+	
+	/**
+	 * displays a string on the screen
+	 * @param showString the string to be displayed on the screen
+	 */
 	public void displayString(String showString) { 
 		LCD.clear();
 		LCD.drawString(showString, 0, 1);

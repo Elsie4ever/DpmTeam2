@@ -4,7 +4,12 @@ import lejos.hardware.Sound;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.robotics.SampleProvider;
-
+/**
+ * 
+ * @author Adam
+ * @since 3.0
+ *
+ */
 public class LightPoller extends Thread{
 	private Odometer odo;
 	private boolean seesLine = false;
@@ -18,12 +23,18 @@ public class LightPoller extends Thread{
 	public int colorID;
 	public boolean seesBlock;
 
-	
+	/**
+	 * 
+	 * @param colorSensor reads the values that the color sensor is reading
+	 * @param sample	the values that the color sensor is displaying
+	 */
 	public LightPoller(SampleProvider colorSensor, float[] sample) {
 		this.colorSensor = colorSensor;
 		this.sample = sample;
 	}
-
+/**
+ * starts the sampling process
+ */
 	public void run() {
 
 		while (true) {
@@ -55,10 +66,17 @@ public class LightPoller extends Thread{
 				try { Thread.sleep(70);  } catch(Exception e){}		// Poor man's timed sampling
 			}		
 	}
-	public boolean seesBlock(){ //is there a styro block
+	/**
+	 * determines whether or not the bot is currently looking at a block
+	 * @return the status of if the bot is looking at a block or not
+	 */
+	public boolean seesBlock(){ //is there a block
 		return seesBlock;
 	}
-	
+	/**
+	 * gets the current values being read by the color sensor
+	 * @return the most recent values read by the sensor
+	 */
 	public double [] getRGB(){
 		double [] RGB = new double[3];
 		
@@ -68,6 +86,11 @@ public class LightPoller extends Thread{
 		
 		return RGB;
 	}
+	
+	/**
+	 * determines whether or not the bot is currently looking at a styro block
+	 * @return the status of if the bot is looking at a styrofoam block or not
+	 */
 	public boolean isFoamBlock(){
 		double[] RGB = getRGB();
 		if(RGB[0] < RGB[1] && RGB[2] < RGB[1]){

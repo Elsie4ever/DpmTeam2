@@ -30,6 +30,11 @@ public class ParseTransmission {
 	// This should only be called after verifying that there is data in the
 	// input stream
 	@SuppressWarnings("unchecked")
+	/**
+	 * organizes the incoming wifi data into a hashmap
+	 * @param dis 
+	 * @return
+	 */
 	public static HashMap<String, Integer> parseData(DataInputStream dis) {
 		HashMap<String, Integer> StartData;
 		try {

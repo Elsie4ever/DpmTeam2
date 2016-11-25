@@ -33,13 +33,27 @@ import java.util.HashMap;
  * class which has access to all of the data needed
  */
 public class WifiConnection {
-
+	/**
+	 * 
+	 */
 	public HashMap<String, Integer> StartData;
-
+	/**
+	 * 
+	 * @param serverIP receives address to connect to server using
+	 * @param teamNumber which bot we are 
+	 * @throws IOException to account for errors
+	 */
 	public WifiConnection(String serverIP, int teamNumber) throws IOException {
 		this(serverIP, teamNumber, true);
 	}
 
+	/**
+	 * 
+	 * @param serverIP receives address to connect to server using
+	 * @param teamNumber which bot we are 
+	 * @param debugPrint boolean that can turn print statements on and off
+	 * @throws IOException in case of errors
+	 */
 	public WifiConnection(String serverIP, int teamNumber, boolean debugPrint) throws IOException {
 
 		// Open connection to the server and data streams
@@ -74,6 +88,10 @@ public class WifiConnection {
 
 	}
 	
+	/**
+	 * gets information received from the wifi
+	 * @return information received over wifi as a hashmap so we can access it
+	 */
 	HashMap<String, Integer> getStartData(){
 		System.out.println(this.StartData);
 		return this.StartData;

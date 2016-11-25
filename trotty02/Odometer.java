@@ -93,6 +93,8 @@ public class Odometer implements TimerListener {
 	
 	/**
 	 * Calculates displacement and heading as title suggests
+	 * 
+	 * @param data the array containing information of the distance forwards and the current heading
 	 */
 	private void getDisplacementAndHeading(double[] data) {
 		int leftTacho, rightTacho;
@@ -193,24 +195,46 @@ public class Odometer implements TimerListener {
 	}
 	
 	// accessors to motors
+	/**
+	 * gives the wheel motors
+	 * @return the left and right motors
+	 */
 	public EV3LargeRegulatedMotor [] getMotors() {
 		return new EV3LargeRegulatedMotor[] {this.leftMotor, this.rightMotor};
 	}
+	/**
+	 * gives just the left motor
+	 * @return just the left motor
+	 */
 	public EV3LargeRegulatedMotor getLeftMotor() {
 		return this.leftMotor;
 	}
+	/**
+	 * gives just the left motor
+	 * @return just the left motor
+	 */
 	public EV3LargeRegulatedMotor getRightMotor() {
 		return this.rightMotor;
 	}
 
 	// static 'helper' methods
+	/**
+	 * gives the principle angle
+	 * @param angle if greater than 360 or less than 0, it returns an equivalant angle between 0 and 360
+	 * @return the corrected angle
+	 */
 	public static double fixDegAngle(double angle) {
 		if (angle < 0.0)
 			angle = 360.0 + (angle % 360.0);
 
 		return angle % 360.0;
 	}
-
+/**
+ * gives the principle angle between two other angles
+ * @param a the starting angle
+ * @param b the ending angle
+ * @return the minimum angle between b and a
+ */
 	public static double minimumAngleFromTo(double a, double b) {
 		double d = fixDegAngle(b - a);
 
@@ -219,15 +243,25 @@ public class Odometer implements TimerListener {
 		else
 			return d - 360.0;
 	}
-
+/**
+ * gives the current heading
+ * @return returns the heading of the bot
+ */
 	public double getTheta() {
 		return theta;
 	}
-	
+	/**
+	 * says if it sees an object on the front usSensor
+	 * @return does the bot see something
+	 */
 	public boolean seesSomething(){
 		return this.usPoller.seesSomething();
 	}
 
+	/**
+	 * says if it sees a blue block on the light sensor
+	 * @return true if there is a blue block, otherwise false
+	 */
 	public boolean seesBlock() {
 		return this.lsPoller.seesBlock();
 	}
