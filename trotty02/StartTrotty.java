@@ -126,7 +126,7 @@ public class StartTrotty {
 			LCDInfo lcd = new LCDInfo(odo, usPollerF, usPollerS, lsPoller);
 			(new Thread() {
 				public void run() {
-					USLocalizer usl = new USLocalizer(odo, usPollerF, USLocalizer.LocalizationType.RISING_EDGE, navigator);
+					USLocalizer usl = new USLocalizer(odo, usPollerF, USLocalizer.LocalizationType.FALLING_EDGE, navigator);
 					usl.doLocalization();
 					
 					Button.waitForAnyPress();
@@ -139,17 +139,20 @@ public class StartTrotty {
 		} else if (buttonChoice == Button.ID_ENTER) {
 			odo.start();
 			usPollerF.start();
-			usPollerS.start();
+			
 
 			lsPoller.start();
 
 			
-			USLocalizer usl = new USLocalizer(odo, usPollerF, USLocalizer.LocalizationType.RISING_EDGE, navigator);
+			USLocalizer usl = new USLocalizer(odo, usPollerF, USLocalizer.LocalizationType.FALLING_EDGE, navigator);
 			LightLocalizer lsl = new LightLocalizer(odo,colorSensor,sample);
 
 			usl.doLocalization();
-			
+			lsl.doLocalization();
+
 			Button.waitForAnyPress();
+			usPollerS.start();
+
 			lightMotor.rotate(85);
 			ObjectFinder of = new ObjectFinder(leftMotor, rightMotor, navigator, lsl, odo,
 					usPollerF, usPollerS, usl, lsPoller, resolution);

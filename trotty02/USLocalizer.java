@@ -72,7 +72,7 @@ public class USLocalizer {
 							Delay.msDelay(delay);										
 							currentDistance = usPoller.getDistance();
 						}
-						angleA = odo.getAng()+15;	//record angleA
+						angleA = odo.getAng();	//record angleA
 			            Sound.beep();
 						// switch direction and wait until it sees no wall
 			            
