@@ -18,6 +18,8 @@ public class ObjectFinder {
 	int avoidanceCounter = 0;
 	boolean avoidMode = false;
 	int resolution;
+	int i = 0;
+	int j = 0;
 	double[] endCoords = {TILE_LENGTH,TILE_LENGTH*5}; 
 	/*
 	double[][] waypoints = new double[][]{
@@ -40,31 +42,31 @@ public class ObjectFinder {
 			}; 
 			*/
 	double[][] waypoints = new double[][]{ //{x, y, check top? 0=true 1=false}
-			  {1*TILE_LENGTH, 1*TILE_LENGTH, 0},
-			  {1*TILE_LENGTH, 2*TILE_LENGTH, 0},
-			  {1*TILE_LENGTH, 3*TILE_LENGTH, 0},
-			  {1*TILE_LENGTH, 4*TILE_LENGTH, 0},
-			  {1*TILE_LENGTH, 5*TILE_LENGTH, 0},
-			  {2*TILE_LENGTH, 5*TILE_LENGTH, 0},
-			  {3*TILE_LENGTH, 5*TILE_LENGTH, 0},
-			  {4*TILE_LENGTH, 5*TILE_LENGTH, 0},
-			  {5*TILE_LENGTH, 5*TILE_LENGTH, 0},
-			  {5*TILE_LENGTH, 4*TILE_LENGTH, 0},
-			  {5*TILE_LENGTH, 3*TILE_LENGTH, 0},
-			  {5*TILE_LENGTH, 2*TILE_LENGTH, 0},
-			  {5*TILE_LENGTH, 1*TILE_LENGTH, 0},
-			  {4*TILE_LENGTH, 1*TILE_LENGTH, 0},
-			  {3*TILE_LENGTH, 1*TILE_LENGTH, 0},
-			  {2*TILE_LENGTH, 1*TILE_LENGTH, 0},
-			  {2*TILE_LENGTH, 2*TILE_LENGTH, 0},
-			  {2*TILE_LENGTH, 3*TILE_LENGTH, 0},
-			  {2*TILE_LENGTH, 4*TILE_LENGTH, 0},
-			  {3*TILE_LENGTH, 4*TILE_LENGTH, 0},
-			  {4*TILE_LENGTH, 4*TILE_LENGTH, 0},
-			  {4*TILE_LENGTH, 3*TILE_LENGTH, 0},
-			  {4*TILE_LENGTH, 2*TILE_LENGTH, 0},
-			  {3*TILE_LENGTH, 2*TILE_LENGTH, 0},
-			  {3*TILE_LENGTH, 3*TILE_LENGTH, 0}
+			  {(1+i)*TILE_LENGTH, (1+j)*TILE_LENGTH, 0},
+			  {(1+i)*TILE_LENGTH, (2+j)*TILE_LENGTH, 0},
+			  {(1+i)*TILE_LENGTH, (3+j)*TILE_LENGTH, 0},
+			  {(1+i)*TILE_LENGTH, (4+j)*TILE_LENGTH, 0},
+			  {(1+i)*TILE_LENGTH, (5+j)*TILE_LENGTH, 0},
+			  {(2+i)*TILE_LENGTH, (5+j)*TILE_LENGTH, 0},
+			  {(3+i)*TILE_LENGTH, (5+j)*TILE_LENGTH, 0},
+			  {(4+i)*TILE_LENGTH, (5+j)*TILE_LENGTH, 0},
+			  {(5+i)*TILE_LENGTH, (5+j)*TILE_LENGTH, 0},
+			  {(5+i)*TILE_LENGTH, (4+j)*TILE_LENGTH, 0},
+			  {(5+i)*TILE_LENGTH, (3+j)*TILE_LENGTH, 0},
+			  {(5+i)*TILE_LENGTH, (2+j)*TILE_LENGTH, 0},
+			  {(5+i)*TILE_LENGTH, (1+j)*TILE_LENGTH, 0},
+			  {(4+i)*TILE_LENGTH, (1+j)*TILE_LENGTH, 0},
+			  {(3+i)*TILE_LENGTH, (1+j)*TILE_LENGTH, 0},
+			  {(2+i)*TILE_LENGTH, (1+j)*TILE_LENGTH, 0},
+			  {(2+i)*TILE_LENGTH, (2+j)*TILE_LENGTH, 0},
+			  {(2+i)*TILE_LENGTH, (3+j)*TILE_LENGTH, 0},
+			  {(2+i)*TILE_LENGTH, (4+j)*TILE_LENGTH, 0},
+			  {(3+i)*TILE_LENGTH, (4+j)*TILE_LENGTH, 0},
+			  {(4+i)*TILE_LENGTH, (4+j)*TILE_LENGTH, 0},
+			  {(4+i)*TILE_LENGTH, (3+j)*TILE_LENGTH, 0},
+			  {(4+i)*TILE_LENGTH, (2+j)*TILE_LENGTH, 0},
+			  {(3+i)*TILE_LENGTH, (2+j)*TILE_LENGTH, 0},
+			  {(3+i)*TILE_LENGTH, (3+j)*TILE_LENGTH, 0}
 			}; 
 	private Odometer odometer;
 	private EV3LargeRegulatedMotor leftMotor, rightMotor;
@@ -93,8 +95,12 @@ public class ObjectFinder {
 	public ObjectFinder(EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor, Navigation navigator, 
 			LightLocalizer lightLocalizer,
 			Odometer odometer,
-			UltrasonicPoller USpollerF, UltrasonicPoller USpollerS, USLocalizer usLocalizer, LightPoller lightPoller, int resolution) {
+			UltrasonicPoller USpollerF, UltrasonicPoller USpollerS,
+			USLocalizer usLocalizer, LightPoller lightPoller, int resolution
+			, int xHalf, int yHalf) {
 
+		this.i = 6*xHalf;
+		this.j = 6*yHalf;
 		this.leftMotor = leftMotor;
 		this.rightMotor = rightMotor;
 		this.navigator = navigator;

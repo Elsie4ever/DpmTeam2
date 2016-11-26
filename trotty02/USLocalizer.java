@@ -21,6 +21,7 @@ public class USLocalizer {
 	private UltrasonicPoller usPoller = new UltrasonicPoller(usSensor, usData);
 	private Navigation navigator = null;
 	private EV3LargeRegulatedMotor leftMotor, rightMotor;
+	private int corner;
 
 	public USLocalizer(Odometer odo,  SampleProvider usSensor, float[] usData, LocalizationType locType, Navigation navigator, int cornerNum) {
 		this.odo = odo;
@@ -32,8 +33,9 @@ public class USLocalizer {
 		errorFilterMax = 70;
 		distanceMax = 70;
 		wallDistance = 30;
+		this.corner = cornerNum;
 	}
-	public USLocalizer(Odometer odo,UltrasonicPoller usPoller, LocalizationType locType, Navigation navigator) {
+	public USLocalizer(Odometer odo,UltrasonicPoller usPoller, LocalizationType locType, Navigation navigator, int corner) {
 		this.odo = odo;
 		this.usPoller = usPoller;
 		this.locType = locType;
@@ -183,6 +185,13 @@ public class USLocalizer {
 	
 	navigator.turnTo(135, true);
 	odo.setPosition(new double[] { 0.0, 0.0, 45.0 }, new boolean[] { true, true, true }); 
+	
+	if(corner == 2)
+		odo.setPosition(new double[] {360-odo.getX(), 0, 135}, new boolean[]{true, false, true}); 
+	if(corner == 3)
+		odo.setPosition(new double[] {360-odo.getX(), 360-odo.getY(), 225}, new boolean[]{true, true, true}); 
+	if(corner == 4)
+		odo.setPosition(new double[] {0, 360-odo.getY(), 315}, new boolean[]{false, true, true}); 
 	
 	/*odo.setPosition(new double[] {usPoller.distance+7, 0, 0}, new boolean[]{true, false, false}); 
 		//the 7 compensates for hardware inaccuracies

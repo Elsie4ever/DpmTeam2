@@ -46,11 +46,11 @@ public class StartTrotty {
 	 */
 	public static void main(String[] args) {
 		int buttonChoice;
-		/*WifiTest wifi = new WifiTest();
+		final WifiTest wifi = new WifiTest();
 		wifi.run();
 		wifi.getRole();
-		wifi.getCorner();
-		*/
+		int corner = wifi.getCorner();
+		
 		//final Odometer odo = new Odometer(leftMotor, rightMotor, 30, true, usPoller);
 
 
@@ -126,7 +126,7 @@ public class StartTrotty {
 			LCDInfo lcd = new LCDInfo(odo, usPollerF, usPollerS, lsPoller);
 			(new Thread() {
 				public void run() {
-					USLocalizer usl = new USLocalizer(odo, usPollerF, USLocalizer.LocalizationType.FALLING_EDGE, navigator);
+					USLocalizer usl = new USLocalizer(odo, usPollerF, USLocalizer.LocalizationType.FALLING_EDGE, navigator, wifi.getCorner());
 					usl.doLocalization();
 					
 					Button.waitForAnyPress();
@@ -144,7 +144,7 @@ public class StartTrotty {
 			lsPoller.start();
 
 			
-			USLocalizer usl = new USLocalizer(odo, usPollerF, USLocalizer.LocalizationType.FALLING_EDGE, navigator);
+			USLocalizer usl = new USLocalizer(odo, usPollerF, USLocalizer.LocalizationType.FALLING_EDGE, navigator, wifi.getCorner());
 			LightLocalizer lsl = new LightLocalizer(odo,colorSensor,sample);
 
 			usl.doLocalization();
@@ -155,14 +155,14 @@ public class StartTrotty {
 
 			lightMotor.rotate(85);
 			ObjectFinder of = new ObjectFinder(leftMotor, rightMotor, navigator, lsl, odo,
-					usPollerF, usPollerS, usl, lsPoller, resolution);
+					usPollerF, usPollerS, usl, lsPoller, resolution, wifi.getxHalf(), wifi.getyHalf());
 			of.pointDriver();
 		} else if (buttonChoice == Button.ID_DOWN) {
 			LightLocalizer lsl = new LightLocalizer(odo,colorSensor,sample);
-			USLocalizer usl = new USLocalizer(odo, usPollerF, USLocalizer.LocalizationType.RISING_EDGE, navigator);
+			USLocalizer usl = new USLocalizer(odo, usPollerF, USLocalizer.LocalizationType.RISING_EDGE, navigator, wifi.getCorner());
 			lightMotor.rotate(85);
 			ObjectFinder of = new ObjectFinder(leftMotor, rightMotor, navigator, lsl, odo,
-					usPollerF, usPollerS, usl, lsPoller, resolution);
+					usPollerF, usPollerS, usl, lsPoller, resolution, wifi.getxHalf(), wifi.getyHalf());
 			of.pointDriver();
 		}
 		System.exit(0);	

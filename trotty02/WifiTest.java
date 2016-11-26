@@ -107,7 +107,21 @@ public class WifiTest {
 
 		return 1;
 	}
-
+	
+	public int getxHalf(){
+		if (role == 1)
+			return (int) (((t.get("LGZx") + ((t.get("UGZx")-t.get("LGZx"))/2))/30.48)/6);
+		else
+			return (int) (((t.get("LRZx") + ((t.get("URZx")-t.get("LRZx"))/2))/30.48)/6);
+	}
+	
+	public int getyHalf(){
+		if (role == 1)
+			return (int) (((t.get("LGZy") + ((t.get("UGZy")-t.get("LGZy"))/2))/30.48)/6);
+		else
+			return (int) (((t.get("LRZy") + ((t.get("URZy")-t.get("LRZy"))/2))/30.48)/6);
+	}
+	
 	public int getLRZy(){
 		return (int)(t.get("LRZy"));
 	}
