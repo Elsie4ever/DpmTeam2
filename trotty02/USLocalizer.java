@@ -75,7 +75,6 @@ public class USLocalizer {
 							currentDistance = usPoller.getDistance();
 						}
 						angleA = odo.getAng();	//record angleA
-			            Sound.beep();
 						// switch direction and wait until it sees no wall
 			            
 						while (currentDistance <= wallDistance) {					//if the distance is less than wallDistance
@@ -97,7 +96,6 @@ public class USLocalizer {
 						}
 					
 						angleB = odo.getAng();										//record angleB
-						Sound.beep();
 						// angleA is clockwise from angleB, so assume the average of the
 						// angles to the right of angleB is 45 degrees past 'north'
 
@@ -112,7 +110,8 @@ public class USLocalizer {
 						// update the odometer position (example to follow:)
 						Delay.msDelay(1000);
 					
-					
+			            Sound.beep();
+
 		} else {
 			/*
 			 * The robot should turn until it sees the wall, then look for the
@@ -180,11 +179,12 @@ public class USLocalizer {
 			Delay.msDelay(4000);  				//delay 4 seconds to stable the robot before reset position
 			
 			odo.setPosition(new double[] { 0.0, 0.0, 90.0 }, new boolean[] { true, true, true }); 
-				
+            Sound.beep();
+
 		}
 	
 	navigator.turnTo(135, true);
-	odo.setPosition(new double[] { 0.0, 0.0, 45.0 }, new boolean[] { true, true, true }); 
+	odo.setPosition(new double[] { 15, 15, 45.0 }, new boolean[] { true, true, true }); 
 	
 	if(corner == 2)
 		odo.setPosition(new double[] {360-odo.getX(), 0, 135}, new boolean[]{true, false, true}); 

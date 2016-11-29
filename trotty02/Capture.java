@@ -23,8 +23,7 @@ public class Capture {
 	 */
 	public void CaptureObj(){
 		armMotor.setSpeed(77);
-		armMotor.rotate(120, false);
-		//TODO: determine actualy angle- 50 was a random number
+		armMotor.rotateTo(120, false);
 	}
 
 }

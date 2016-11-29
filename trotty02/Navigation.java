@@ -194,7 +194,7 @@ public void travelDistance(double distance) {
  * @param distance the distance to go forwards
  */
 public void goForward(double distance) {
-	Sound.beep();
+	//Sound.beep();
 	this.leftMotor.setSpeed(SLOW);
 	this.rightMotor.setSpeed(SLOW);
 	try {

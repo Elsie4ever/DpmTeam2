@@ -41,16 +41,30 @@ public class WifiTest {
 	 * 2. TEAM_NUMBER: your project team number
 	 * */
 
-	private static final String SERVER_IP = "192.168.2.8";
+	private static final String SERVER_IP = "192.168.2.3";
 	private static final int TEAM_NUMBER = 2;
 	public static HashMap<String, Integer> t;
 	public static int role;
+	public static int corner;
+	public static int xHalf;
+	public static int yHalf;
+	public static int LRZy;
+	public static int UGZy;
+	public static int LRZx;
+	public static int UGZx;
+	public static int LGZy;
+	public static int LGZx;
+	public static int URZy;
+	public static int URZx;
+	public static int xCenter;
+	public static int yCenter;
+
 	
 	private static TextLCD LCD = LocalEV3.get().getTextLCD();
 
 	public WifiTest() {
 	}
-	
+
 	public void run(){
 		LCD.clear();
 
@@ -67,10 +81,10 @@ public class WifiTest {
 		 */ 
 		WifiConnection conn = null;
 		try {
-			System.out.println("Connecting...");
+			System.out.println("             C");
 			conn = new WifiConnection(SERVER_IP, TEAM_NUMBER, true);
 		} catch (IOException e) {
-			System.out.println("Connection failed");
+			System.out.println("             C");
 		}
 
 		LCD.clear();
@@ -82,77 +96,82 @@ public class WifiTest {
 		if (conn != null) {
 			HashMap<String, Integer> t = conn.StartData;
 			if (t == null) {
-				System.out.println("Failed to read transmission");
+				System.out.println("        ftr");
 			} else {
-				System.out.println("Transmission read:\n" + t.toString());
+				System.out.println("          read" );
+				//+ t.toString());
+
 			}
 		}
 
 		// Wait until user decides to end program
-		Button.waitForAnyPress();
+		//	Button.waitForAnyPress();
+
+		role = conn.role;
+		corner = conn.corner;
+		xHalf = conn.xHalf;
+		yHalf = conn.yHalf;
+		xCenter = conn.xCenter;
+		yCenter = conn.yCenter;
+			LRZy = conn.LRZy;
+			UGZy = conn.UGZy;
+			LRZx = conn.LRZx;
+			UGZx = conn.UGZx;
+			LGZy = conn.LGZy;
+			LGZx = conn.LGZx;
+			URZy = conn.URZy;
+			URZx = conn.URZx;
+
+
 	}
-	
-	public void getRole(){
-		if((t.get("BTN")) == 2)
-			role = 1; //builder
-		if((t.get("CTN")) == 2)
-			role = 2; //collector
+
+	public int getRole(){
+		return this.role;
 	}
 
 	public int getCorner(){
-		if(role == 1)
-			return (int)(t.get("BSC"));
-		if(role == 2)
-			return (int)(t.get("CSC"));
-
-		return 1;
+		return this.corner;
 	}
-	
+
 	public int getxHalf(){
-		if (role == 1)
-			return (int) (((t.get("LGZx") + ((t.get("UGZx")-t.get("LGZx"))/2))/30.48)/6);
-		else
-			return (int) (((t.get("LRZx") + ((t.get("URZx")-t.get("LRZx"))/2))/30.48)/6);
-	}
-	
-	public int getyHalf(){
-		if (role == 1)
-			return (int) (((t.get("LGZy") + ((t.get("UGZy")-t.get("LGZy"))/2))/30.48)/6);
-		else
-			return (int) (((t.get("LRZy") + ((t.get("URZy")-t.get("LRZy"))/2))/30.48)/6);
-	}
-	
-	public int getLRZy(){
-		return (int)(t.get("LRZy"));
-	}
-	
-	public int getUGZy(){
-		return (int)(t.get("UGZy"));
-	}
-	
-	public int getLRZx(){
-		return (int)(t.get("LRZx"));
-	}
-	
-	public int getUGZx(){
-		return (int)(t.get("UGZx"));
-	}
-	
-	public int getLGZy(){
-		return (int)(t.get("LGZy"));
-	}
-	
-	public int getLGZx(){
-		return (int)(t.get("LGZx"));
-	}
-	
-	public int getURZy(){
-		return (int)(t.get("URZy"));
-	}
-	
-	public int getURZx(){
-		return (int)(t.get("URZx"));
+		return this.xHalf;
 	}
 
-	
+	public int getyHalf(){
+		return this.yHalf;
+		}
+
+	public int getLRZy(){
+		return this.LRZy;
+	}
+
+	public int getUGZy(){
+		return this.UGZx;
+	}
+
+	public int getLRZx(){
+		return this.LRZx;
+	}
+
+	public int getUGZx(){
+		return this.UGZx;
+	}
+
+	public int getLGZy(){
+		return this.LGZy;
+	}
+
+	public int getLGZx(){
+		return this.LGZx;
+	}
+
+	public int getURZy(){
+		return this.URZy;
+	}
+
+	public int getURZx(){
+		return this.URZx;
+	}
+
+
 }
